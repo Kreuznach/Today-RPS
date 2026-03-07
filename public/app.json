@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "1",
+  "id": "today-rps",
+  "deploymentId": "019c88f8-6b60-7403-becd-215c639c247a",
+  "name": "오늘의 가위바위보",
+  "version": "1.0.0",
+  "entry": "index.html",
+  "orientation": "portrait",
+  "backgroundColor": "#ffffff"
+}
