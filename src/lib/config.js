@@ -2,7 +2,7 @@
  * lib/config.js
  * Supabase 연결 정보 및 Toss 유저 식별자
  */
-import { GoogleAdMob } from '@apps-in-toss/web-framework';
+import { GoogleAdMob, getUserKeyForGame } from '@apps-in-toss/web-framework';
 
 /** 재도전 광고 그룹 ID (AIT 대시보드에서 발급) */
 const AD_GROUP_ID = 'ait.v2.live.cacf10246e29481d';
@@ -13,30 +13,36 @@ export const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY ?? '';
 /**
  * Toss 유저 식별자 반환
  *
- * Toss In-App SDK가 제공하는 익명 UUID (sub 클레임)을 사용합니다.
- * SDK를 통해 받은 JWT는 Supabase Custom JWT Provider에서
- * 검증되며, auth.jwt() ->> 'sub' 으로 RLS 에서 판단됩니다.
+ * AIT(Apps In Toss) 환경에서는 `getUserKeyForGame()`이 반환하는 HASH 값을
+ * 사용자 식별자로 사용합니다. 이 값은 동일 Toss 계정에서 항상 동일하게
+ * 반환되므로 안정적인 고유 ID로 활용할 수 있습니다.
+ * AIT 미지원 환경(개발/브라우저)에서는 localStorage 기반 게스트 ID로 폴백합니다.
  */
-export function getTossUserId() {
-  // 실제 환경 (Toss In-App SDK)
-  // const user = window.TossInApp?.getUser();
-  // return user?.userId ?? _guestId();
+export async function getTossUserId() {
+  try {
+    const result = await getUserKeyForGame();
+    if (result && result !== 'INVALID_CATEGORY' && result !== 'ERROR' && result.type === 'HASH') {
+      return result.hash;
+    }
+  } catch {
+    // AIT SDK 미지원 환경 (개발/브라우저)
+  }
   return _guestId();
 }
 
 /**
- * 닉네임 반환
+ * 닉네임 생성
  *
- * Toss SDK는 닉네임을 직접 제공하지 않습니다 (실명 금융앱 특성상).
- * 앙은 표시 이름은 앱에서 자동 생성하여 DB에 저장합니다.
+ * Toss SDK는 닉네임을 직접 제공하지 않으므로 앱에서 자동 생성합니다.
+ * 신규 사용자 최초 등록 시에만 호출되며, 결과는 DB에 저장됩니다.
+ * 로컬 캐시 없이 항상 새로운 닉네임을 생성하여 사용자별 고유성을 보장합니다.
  * 형식 예시: '용감한 치타#4829'
  */
-export function getTossNickname() {
-  const stored = localStorage.getItem('rps_nick');
-  if (stored) return stored;
-  const nick = _generateNickname();
-  localStorage.setItem('rps_nick', nick);
-  return nick;
+export function generateNickname() {
+  const adj  = ADJECTIVES[Math.floor(Math.random() * ADJECTIVES.length)];
+  const noun = NOUNS[Math.floor(Math.random() * NOUNS.length)];
+  const num  = String(Math.floor(Math.random() * 9000) + 1000);
+  return `${adj} ${noun}#${num}`;
 }
 
 const ADJECTIVES = [
@@ -47,13 +53,6 @@ const NOUNS = [
   '치타', '맹구', '가위', '독수리', '용', '호랑이', '사자', '곰',
   '판다', '여우', '늑대', '매', '표범', '상어', '고릴라', '독사',
 ];
-
-function _generateNickname() {
-  const adj  = ADJECTIVES[Math.floor(Math.random() * ADJECTIVES.length)];
-  const noun = NOUNS[Math.floor(Math.random() * NOUNS.length)];
-  const num  = String(Math.floor(Math.random() * 9000) + 1000);
-  return `${adj} ${noun}#${num}`;
-}
 
 function _guestId() {
   const KEY = 'rps_uid';
@@ -142,7 +141,7 @@ export const HOF_CATEGORIES = [
   { key: 'win_streak',  label: '🏅 연속 승리' },
   { key: 'lose_streak', label: '💀 연속 패배' },
   { key: 'draw_streak', label: '🤝 연속 무승부' },
-  { key: 'play_streak', label: '📅 연속 출석' },
+  { key: 'play_streak', label: '📅 연속 출석', minLabel: '10일 이상' },
   { key: 'total_wins',  label: '🏆 총 승리' },
   { key: 'retry_wins',  label: '🎲 역전승' },
 ];

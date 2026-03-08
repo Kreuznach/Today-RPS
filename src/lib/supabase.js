@@ -4,7 +4,7 @@
  */
 
 import { createClient } from '@supabase/supabase-js';
-import { SUPABASE_URL, SUPABASE_ANON_KEY, getTossNickname } from './config.js';
+import { SUPABASE_URL, SUPABASE_ANON_KEY, generateNickname } from './config.js';
 
 let _client = null;
 export function getClient() {
@@ -36,7 +36,7 @@ export async function getOrCreateUser(userId) {
   // 최초 방문 시에만 닉네임 생성 & 삽입
   const { data, error } = await db
     .from('users')
-    .insert({ user_id: userId, nickname: getTossNickname() })
+    .insert({ user_id: userId, nickname: generateNickname() })
     .select()
     .single();
   if (error) throw error;
@@ -102,7 +102,7 @@ export async function saveGameRecord(userId, userChoice, compChoice, result, isR
 export async function fetchHallOfFame(category) {
   const { data, error } = await getClient()
     .from('hall_of_fame')
-    .select('rank, record, achieved_at, users(nickname)')
+    .select('rank, user_id, record, achieved_at, users(nickname)')
     .eq('category', category)
     .order('rank', { ascending: true });
   if (error) throw error;

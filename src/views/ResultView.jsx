@@ -78,6 +78,7 @@ export default function ResultView({ state }) {
               </svg>
               {adLoading ? '광고 로딩 중…' : '광고 보고 재도전'}
             </button>
+            <p className="ad-hint small">광고 시청 후 재도전 시 오늘 즔 시도횟수는 합산 2회로 기록됩니다.</p>
             <p className="ad-hint small">재도전 후 결과는 강제 적용됩니다</p>
           </div>
         )}

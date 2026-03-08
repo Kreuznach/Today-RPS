@@ -12,7 +12,7 @@ import { formatDate, escHtml } from '../lib/game.js';
 const RANK_EMOJI = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣'];
 
 export default function HallOfFameView() {
-  const { showToast } = useApp();
+  const { showToast, userId } = useApp();
   const [activeCat, setActiveCat] = useState('win_streak');
   const [rows,      setRows]      = useState(null); // null = loading
 
@@ -43,6 +43,12 @@ export default function HallOfFameView() {
         ))}
       </nav>
 
+      {HOF_CATEGORIES.find(c => c.key === activeCat)?.minLabel && (
+        <p className="hof-min-label">
+          최소 {HOF_CATEGORIES.find(c => c.key === activeCat).minLabel} 기록만 집계됩니다
+        </p>
+      )}
+
       <main className="hof-content">
         <div className="hof-list" role="list" aria-live="polite">
           {rows === null ? (
@@ -53,10 +59,13 @@ export default function HallOfFameView() {
             rows.map((row, i) => (
               <div
                 key={row.rank}
-                className="hof-item"
+                className={`hof-item${row.user_id === userId ? ' hof-item--me' : ''}`}
                 role="listitem"
                 style={{ '--i': i }}
               >
+                {row.user_id === userId && (
+                  <span className="hof-me-badge">👑 나</span>
+                )}
                 <div className={`hof-rank rank-${row.rank}`}>
                   {RANK_EMOJI[i] ?? row.rank}
                 </div>

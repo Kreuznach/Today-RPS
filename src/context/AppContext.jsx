@@ -54,7 +54,7 @@ export function AppProvider({ children }) {
   useEffect(() => {
     (async () => {
       try {
-        const uid = getTossUserId();
+        const uid = await getTossUserId();
         setUserId(uid);
         await getOrCreateUser(uid);
         await refreshTodayStatus(uid);

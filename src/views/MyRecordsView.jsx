@@ -84,12 +84,15 @@ export default function MyRecordsView() {
               { icon: '🏅', label: '연속 승리',   val: `${streaks?.max_win_streak  ?? 0}연승` },
               { icon: '💀', label: '연속 패배',   val: `${streaks?.max_lose_streak ?? 0}연패` },
               { icon: '🤝', label: '연속 무승부', val: `${streaks?.max_draw_streak ?? 0}연무` },
-              { icon: '📅', label: '연속 출석',   val: `${streaks?.max_play_streak ?? 0}일` },
+              { icon: '📅', label: '연속 출석',   val: `${streaks?.max_play_streak ?? 0}일`, minLabel: '10일 이상' },
               { icon: '🎲', label: '광고 역전승', val: `${streaks?.retry_wins      ?? 0}회` },
-            ].map(({ icon, label, val }) => (
+            ].map(({ icon, label, val, minLabel }) => (
               <div className="streak-row" key={label}>
                 <span className="streak-icon">{icon}</span>
-                <span className="streak-name">{label}</span>
+                <span className="streak-name">
+                  {label}
+                  {minLabel && <span className="streak-min-label">{minLabel}</span>}
+                </span>
                 <span className="streak-val">{val}</span>
               </div>
             ))}
