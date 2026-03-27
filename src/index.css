@@ -120,6 +120,16 @@ svg    { display: block; }
 .btn-primary:disabled { background: var(--gray-200); color: var(--gray-400); cursor: not-allowed; }
 .btn-xl { height: 60px; font-size: 18px; border-radius: var(--radius-xl); }
 
+/* 내 기록 링크 버튼 (메인 화면 하단) */
+.link-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: none; border: none; padding: 8px 4px;
+  color: var(--gray-500); font-size: 14px; font-weight: 500;
+  cursor: pointer; text-decoration: underline; text-underline-offset: 3px;
+  align-self: center;
+}
+.link-btn:active { color: var(--blue); }
+
 /* ── Spinner ───────────────────────────────────────────── */
 .spinner {
   width: 32px; height: 32px;

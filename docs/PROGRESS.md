@@ -1,6 +1,6 @@
 # Today RPS — 진행 상황 & 체크리스트
 
-> 최종 갱신: 2026-03-08  |  현재 버전: **v0.9.1** (getTossUserId SDK 연동 완료)
+> 최종 갱신: 2026-03-27  |  현재 버전: **v0.9.2** (앱 심사 반려 사항 수정)
 
 ---
 
@@ -46,6 +46,16 @@
 - [x] `views/HallOfFameView.jsx` — 본인 랭킹 항목에 `.hof-item--me` 클래스 + 👑 배지 표시
 - [x] `index.css` — `.hof-item--me` 레인보우 shimmer 그라디언트 테두리 + 골드 글로우 효과
 - [x] `views/ResultView.jsx` — 광고 재도전 시 총 시도 2회 기록 안내 문구 추가
+
+### 심사 반려 대응 (v0.9.2 — 2026-03-27)
+- [x] **줌 제스처 비활성화** — `index.html` viewport 메타에 `maximum-scale=1.0, user-scalable=no` 추가
+- [x] **내비게이션 바 백버튼 제거** — `granite.config.js`에 `navigationBar: { withBackButton: false }` 설정 (네이티브 중복 버튼 제거)
+- [x] **단일 백버튼 구현** — `MainView.jsx` 헤더 좌측을 종료 버튼(`closeApp()`)으로 교체, 하위 화면은 기존 `TopBar` 백버튼 유지
+- [x] **Android 하드웨어 백버튼 처리** — `App.jsx` ViewRouter에 `popstate` 리스너 추가 (최초 화면→앱 종료, 하위 화면→화면 이동)
+- [x] **내 기록 접근 경로 유지** — 메인 헤더에서 콘텐츠 영역 하단 링크 버튼(`link-btn`)으로 이동
+- [x] **`closeApp()` 유틸 추가** — `lib/config.js`에서 AIT `closeView()` 래핑, 미지원 환경에서 무시
+- [x] **`goTo()` 버그 수정** — `AppContext.jsx`의 `prevView` 미저장 버그 수정 (functional update로 현재 view를 prevView에 저장)
+- [x] **`index.css`** — `.link-btn` 스타일 추가
 ### CSS / 디자인
 - [x] Toss 스타일 디자인 시스템 (CSS 변수, 컬러 팔레트)
 - [x] 뷰 전환 트랜지션 (slide + opacity)
@@ -86,6 +96,9 @@
 | 2026-03-02 | 흰색 화면 | `#root` height 미지정, `.view-loading` `display:flex` 누락 | `index.css` 수정 |
 | 2026-03-07 | `game_records INSERT` 시 트랜잭션 롤백 | 트리거 함수가 `SECURITY DEFINER` 없이 `anon` 권한으로 실행 → `hall_of_fame` 쓰기 실패 | `004`, `005` migration으로 `SECURITY DEFINER` 추가 |
 | 2026-03-07 | `42804 datatype_mismatch` (HoF 갱신 실패) | `fn_refresh_hall_of_fame` 내 `FOREACH v_cat, v_col` 다중 루프 변수 사용 불가 | `006` migration으로 `FOR i IN 1..6` 인덱스 순환 방식으로 교체 |
+| 2026-03-27 | 심사 반려 — 줌 제스처 활성화 | viewport 메타에 `user-scalable` 미지정 | `maximum-scale=1.0, user-scalable=no` 추가 |
+| 2026-03-27 | 심사 반려 — 중복 뒤로가기 버튼 | 네이티브 nav bar 백버튼 + in-app TopBar 백버튼 동시 노출 | `granite.config.js` `navigationBar.withBackButton: false` + MainView 헤더 종료 버튼 교체 |
+| 2026-03-27 | `goTo()` prevView 미저장 (내비게이션 버그) | `setPrevView(v => v)` 가 현재 view를 캡처하지 못함 | functional update `setView(cur => { setPrevView(cur); return next; })` 로 수정 |
 
 ---
 

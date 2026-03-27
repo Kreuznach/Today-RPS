@@ -7,10 +7,10 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "build:ait": "node --no-deprecation scripts/run-granite.mjs build"
+    "build:ait": "ait build"
   },
   "dependencies": {
-    "@apps-in-toss/web-framework": "latest",
+    "@apps-in-toss/web-framework": "^2.1.0",
     "@supabase/supabase-js": "^2.49.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"

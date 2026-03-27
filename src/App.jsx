@@ -19,12 +19,13 @@ import GameView       from './views/GameView.jsx';
 import ResultView     from './views/ResultView.jsx';
 import HallOfFameView from './views/HallOfFameView.jsx';
 import MyRecordsView  from './views/MyRecordsView.jsx';
+import { closeApp } from './lib/config.js';
 
 // ─────────────────────────────────────────────────────────────
 // 뷰 전환 래퍼 (CSS 트랜지션)
 // ─────────────────────────────────────────────────────────────
 function ViewRouter() {
-  const { view: rawView, goTo } = useApp();
+  const { view: rawView, goTo, goBack } = useApp();
 
   // view 값은 string 또는 { view, state } 객체
   const viewKey   = typeof rawView === 'string' ? rawView : rawView?.view;
@@ -34,6 +35,32 @@ function ViewRouter() {
   const [state,     setState]     = useState(viewState);
   const [cls,       setCls]       = useState('active');
   const prevKey = useRef(viewKey);
+
+  // Android 하드웨어 백버튼 처리:
+  // 더미 history 엔트리를 유지해 popstate 가 항상 발화하도록 합니다.
+  const displayedRef = useRef(displayed);
+  useEffect(() => { displayedRef.current = displayed; }, [displayed]);
+
+  useEffect(() => {
+    // 초기 더미 엔트리 push
+    window.history.pushState(null, '');
+
+    function onPopState() {
+      const cur = displayedRef.current;
+      if (cur === 'main' || cur === 'loading') {
+        // 최초 화면 → 앱 종료
+        closeApp();
+      } else {
+        // 하위 화면 → 이전 화면으로 이동
+        goBack();
+      }
+      // 다음 뒤로가기를 위해 더미 엔트리 재push
+      window.history.pushState(null, '');
+    }
+
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, [goBack]);
 
   useEffect(() => {
     if (viewKey === prevKey.current) return;

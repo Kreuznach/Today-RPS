@@ -4,7 +4,7 @@
  */
 import React, { useMemo, useState } from 'react';
 import { useApp } from '../context/AppContext.jsx';
-import { CHOICE_EMOJI, watchAd } from '../lib/config.js';
+import { CHOICE_EMOJI, watchAd, closeApp } from '../lib/config.js';
 import { todayString } from '../lib/game.js';
 
 export default function MainView() {
@@ -72,15 +72,15 @@ export default function MainView() {
 
   return (
     <div className="view active">
+      {/* 최초 화면: 뒤로가기 = 앱 종료, 우측에 명예의 전당 아이콘 */}
       <header className="top-bar">
         <button
           className="icon-btn"
-          aria-label="내 기록"
-          onClick={() => goTo('my-records')}
+          aria-label="앱 종료"
+          onClick={closeApp}
         >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <circle cx="12" cy="8" r="4" />
-            <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <path d="M15 18l-6-6 6-6" />
           </svg>
         </button>
         <h1 className="app-title">오늘의 가위바위보</h1>
@@ -122,6 +122,19 @@ export default function MainView() {
           style={{ marginTop: 'auto' }}
         >
           {adLoading ? '광고 로딩 중…' : btnLabel}
+        </button>
+
+        {/* 내 기록 링크 — 헤더 아이콘 제거 후 콘텐츠 영역으로 이동 */}
+        <button
+          className="link-btn"
+          aria-label="내 기록 보기"
+          onClick={() => goTo('my-records')}
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16" aria-hidden="true">
+            <circle cx="12" cy="8" r="4" />
+            <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+          </svg>
+          내 기록 보기
         </button>
       </main>
     </div>

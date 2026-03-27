@@ -2,10 +2,18 @@
  * lib/config.js
  * Supabase 연결 정보 및 Toss 유저 식별자
  */
-import { GoogleAdMob, getUserKeyForGame } from '@apps-in-toss/web-framework';
+import { GoogleAdMob, getUserKeyForGame, closeView } from '@apps-in-toss/web-framework';
 
 /** 재도전 광고 그룹 ID (AIT 대시보드에서 발급) */
 const AD_GROUP_ID = 'ait.v2.live.cacf10246e29481d';
+
+/**
+ * 미니앱 종료 — AIT의 closeView() 를 호출합니다.
+ * AIT 미지원 환경(개발/브라우저)에서는 아무 동작도 하지 않습니다.
+ */
+export function closeApp() {
+  closeView().catch(() => {});
+}
 
 export const SUPABASE_URL     = import.meta.env.VITE_SUPABASE_URL     ?? '';
 export const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY ?? '';

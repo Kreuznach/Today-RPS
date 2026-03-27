@@ -30,8 +30,12 @@ export function AppProvider({ children }) {
 
   // ── 뷰 전환 ──────────────────────────────────────
   const goTo = useCallback((nextView) => {
-    setPrevView(v => v);
-    setView(nextView);
+    // 현재 view를 prevView에 저장하고 다음 view로 전환
+    setView(currentView => {
+      const currentKey = typeof currentView === 'string' ? currentView : currentView?.view;
+      setPrevView(currentKey);
+      return nextView;
+    });
   }, []);
 
   const goBack = useCallback(() => {

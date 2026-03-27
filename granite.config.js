@@ -30,4 +30,10 @@ export default defineConfig({
   outdir: 'dist',
 
   permissions: [],
+
+  // 내비게이션 바 뒤로가기 버튼 비활성화:
+  // 앱 내 TopBar 의 단일 백버튼으로 히스토리 백 / 앱 종료를 처리합니다.
+  navigationBar: {
+    withBackButton: false,
+  },
 });
