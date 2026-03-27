@@ -1,6 +1,6 @@
 # Today RPS — 진행 상황 & 체크리스트
 
-> 최종 갱신: 2026-03-27  |  현재 버전: **v0.9.2** (앱 심사 반려 사항 수정)
+> 최종 갱신: 2026-03-27  |  현재 버전: **v0.9.3** (테스트 광고 ID 분리)
 
 ---
 
@@ -37,7 +37,8 @@
 ### 라이브러리
 - [x] `lib/config.js` — Supabase 키, 게스트 ID(`localStorage`), 닉네임 생성
 - [x] `lib/config.js` — `watchAd()` : AIT 환경에서 `GoogleAdMob.loadAppsInTossAdMob` → `showAppsInTossAdMob` 2단계 실행, 개발환경 1.5초 Mock 폴백
-- [x] `lib/config.js` — `AD_GROUP_ID` 정의 (`ait.v2.live.cacf10246e29481d`)
+- [x] `lib/config.js` — `AD_GROUP_ID_PROD` / `AD_GROUP_ID_TEST` 분리, `VITE_AD_ENV` 환경변수로 선택 (미설정 시 `import.meta.env.DEV` 자동 판별)
+- [x] `.env.example` — `VITE_AD_ENV` 항목 추가 (test / production / 미설정)
 - [x] `lib/game.js` — 게임 순수 로직 (가위바위보 판정, streak 메시지, confetti, 날짜 포맷)
 - [x] `lib/supabase.js` — REST API 래퍼 (`getOrCreateUser`, `getTodayStatus`, `saveGameRecord`, `fetchHallOfFame`, `fetchMyStreaks`)
 - [x] `lib/config.js` — `getTossNickname()` localStorage 캐시 제거 → `generateNickname()` 로 개명, DB 저장 시에만 호출 (사용자별 고유 닉네임 보장)
@@ -56,6 +57,11 @@
 - [x] **`closeApp()` 유틸 추가** — `lib/config.js`에서 AIT `closeView()` 래핑, 미지원 환경에서 무시
 - [x] **`goTo()` 버그 수정** — `AppContext.jsx`의 `prevView` 미저장 버그 수정 (functional update로 현재 view를 prevView에 저장)
 - [x] **`index.css`** — `.link-btn` 스타일 추가
+
+### 테스트 광고 ID 분리 (v0.9.3 — 2026-03-27)
+- [x] **`lib/config.js`** — `AD_GROUP_ID_PROD` (`ait.v2.live.cacf10246e29481d`) / `AD_GROUP_ID_TEST` (`ait-ad-test-rewarded-id`) 분리 정의
+- [x] **`lib/config.js`** — `VITE_AD_ENV` 환경변수로 광고 ID 선택 (`test` / `production` / 미설정 시 `import.meta.env.DEV` 자동 판별)
+- [x] **`.env.example`** — `VITE_AD_ENV` 항목 및 사용법 주석 추가
 ### CSS / 디자인
 - [x] Toss 스타일 디자인 시스템 (CSS 변수, 컬러 팔레트)
 - [x] 뷰 전환 트랜지션 (slide + opacity)
@@ -81,6 +87,7 @@
 
 ### 빌드/배포
 - [ ] Toss 미니앱 콘솔에서 `.ait` 검수 제출
+- [ ] 프로덕션 빌드 시 `VITE_AD_ENV=production` 설정 (또는 미설정 — `vite build`는 PROD 자동 적용)
 - [ ] 프로덕션 환경변수 설정 (`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`)
 - [ ] RLS 정책을 Toss JWT(`auth.jwt() ->> 'sub'`) 기반으로 교체 (실서비스 전)
 
@@ -99,6 +106,7 @@
 | 2026-03-27 | 심사 반려 — 줌 제스처 활성화 | viewport 메타에 `user-scalable` 미지정 | `maximum-scale=1.0, user-scalable=no` 추가 |
 | 2026-03-27 | 심사 반려 — 중복 뒤로가기 버튼 | 네이티브 nav bar 백버튼 + in-app TopBar 백버튼 동시 노출 | `granite.config.js` `navigationBar.withBackButton: false` + MainView 헤더 종료 버튼 교체 |
 | 2026-03-27 | `goTo()` prevView 미저장 (내비게이션 버그) | `setPrevView(v => v)` 가 현재 view를 캡처하지 못함 | functional update `setView(cur => { setPrevView(cur); return next; })` 로 수정 |
+| 2026-03-27 | 테스트 시 실제 광고 ID 사용 → 정책 위반 위험 | `AD_GROUP_ID` 단일 값으로 환경 구분 불가 | `VITE_AD_ENV` 환경변수 + `import.meta.env.DEV` 자동 판별로 TEST/PROD ID 분리 |
 
 ---
 

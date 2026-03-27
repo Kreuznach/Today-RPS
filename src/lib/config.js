@@ -5,7 +5,29 @@
 import { GoogleAdMob, getUserKeyForGame, closeView } from '@apps-in-toss/web-framework';
 
 /** 재도전 광고 그룹 ID (AIT 대시보드에서 발급) */
-const AD_GROUP_ID = 'ait.v2.live.cacf10246e29481d';
+const AD_GROUP_ID_PROD = 'ait.v2.live.cacf10246e29481d';
+
+/**
+ * Toss Ads 공식 테스트 전용 광고 ID (리워드 광고)
+ * 참고: https://developers-apps-in-toss.toss.im/ads/develop.html#테스트하기
+ * 실제 광고 ID로 테스트하면 정책 위반으로 간주되어 불이익을 받을 수 있습니다.
+ */
+const AD_GROUP_ID_TEST = 'ait-ad-test-rewarded-id';
+
+/**
+ * 테스트 광고 여부 결정
+ *  - VITE_AD_ENV=test        → 테스트 ID 강제 사용
+ *  - VITE_AD_ENV=production  → 프로덕션 ID 강제 사용
+ *  - 미설정                  → 개발 빌드(import.meta.env.DEV)이면 테스트 ID, 아니면 프로덕션 ID
+ */
+const _useTestAd = (() => {
+  const adEnv = import.meta.env.VITE_AD_ENV;
+  if (adEnv === 'test')       return true;
+  if (adEnv === 'production') return false;
+  return import.meta.env.DEV;
+})();
+
+const AD_GROUP_ID = _useTestAd ? AD_GROUP_ID_TEST : AD_GROUP_ID_PROD;
 
 /**
  * 미니앱 종료 — AIT의 closeView() 를 호출합니다.
