@@ -16,8 +16,8 @@ export function getClient() {
 // 날짜 (서버 KST 기준)
 // ─────────────────────────────────────────
 export function getLocalKSTDate() {
-  const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Seoul' }));
-  return now.toISOString().split('T')[0]; // 'YYYY-MM-DD'
+  // en-CA 로케일은 YYYY-MM-DD 형식을 반환하며, timeZone 옵션으로 시스템 시간대와 무관하게 KST 날짜를 정확히 구한다.
+  return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul' }).format(new Date()); // 'YYYY-MM-DD'
 }
 
 // ─────────────────────────────────────────
