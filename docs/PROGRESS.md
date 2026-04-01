@@ -1,6 +1,6 @@
 # Today RPS — 진행 상황 & 체크리스트
 
-> 최종 갱신: 2026-03-27  |  현재 버전: **v0.9.3** (테스트 광고 ID 분리)
+> 최종 갱신: 2026-04-01  |  현재 버전: **v0.9.4** (UI 개선 — 기회 표시 칩화, 명예의 전당 아이콘 교체)
 
 ---
 
@@ -57,6 +57,11 @@
 - [x] **`closeApp()` 유틸 추가** — `lib/config.js`에서 AIT `closeView()` 래핑, 미지원 환경에서 무시
 - [x] **`goTo()` 버그 수정** — `AppContext.jsx`의 `prevView` 미저장 버그 수정 (functional update로 현재 view를 prevView에 저장)
 - [x] **`index.css`** — `.link-btn` 스타일 추가
+
+### UI 개선 (v0.9.4 — 2026-04-01)
+- [x] **`MainView.jsx`** — 메인 화면 기회 표시 캐러셀 점(`.chance-dot`) → 레이블 칩(`.chance-chip`)으로 재설계 ("1회" / "재도전" 텍스트 칩, 상태별 색상 유지)
+- [x] **`MainView.jsx`** — 우측 상단 별표(⭐ 즐겨찾기 연상) SVG → 트로피 컵 SVG로 교체 (명예의 전당 이동 버튼 의미 명확화)
+- [x] **`index.css`** — `.chance-indicator` / `.chance-dot` 스타일 → `.chance-slots` / `.chance-chip` 스타일로 교체
 
 ### 테스트 광고 ID 분리 (v0.9.3 — 2026-03-27)
 - [x] **`lib/config.js`** — `AD_GROUP_ID_PROD` (`ait.v2.live.cacf10246e29481d`) / `AD_GROUP_ID_TEST` (`ait-ad-test-rewarded-id`) 분리 정의

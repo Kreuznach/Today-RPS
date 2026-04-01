@@ -20,8 +20,8 @@ export default function MainView() {
       return {
         btnLabel:    '게임 시작',
         btnDisabled: false,
-        dot0:        'chance-dot active',
-        dot1:        'chance-dot',
+        dot0:        'chance-chip active',
+        dot1:        'chance-chip',
         chanceLabel: '오늘 1번 플레이 가능',
         preview:     null,
       };
@@ -38,8 +38,8 @@ export default function MainView() {
       return {
         btnLabel:    '오늘 도전 완료',
         btnDisabled: true,
-        dot0:        'chance-dot used',
-        dot1:        'chance-dot used',
+        dot0:        'chance-chip used',
+        dot1:        'chance-chip used',
         chanceLabel: '내일 다시 만나요 👋',
         preview:     { text: previewText, cls: latestRecord?.result ?? '' },
       };
@@ -48,8 +48,8 @@ export default function MainView() {
     return {
       btnLabel:    '광고 보고 재도전',
       btnDisabled: false,
-      dot0:        'chance-dot used',
-      dot1:        'chance-dot retry',
+      dot0:        'chance-chip used',
+      dot1:        'chance-chip retry',
       chanceLabel: '재도전 1회 가능 (광고 시청 후)',
       preview:     { text: previewText, cls: latestRecord?.result ?? '' },
     };
@@ -90,7 +90,11 @@ export default function MainView() {
           onClick={() => goTo('hall-of-fame')}
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+            <path d="M6 3h12v7a6 6 0 0 1-12 0V3z" />
+            <path d="M4 6H2a1 1 0 0 0-1 1v1a4 4 0 0 0 4 3.87" />
+            <path d="M20 6h2a1 1 0 0 1 1 1v1a4 4 0 0 1-4 3.87" />
+            <path d="M12 16v4" />
+            <path d="M9 20h6" />
           </svg>
         </button>
       </header>
@@ -103,9 +107,9 @@ export default function MainView() {
           <p className="hero-sub">오늘의 운을 시험해 보세요!</p>
         </div>
 
-        <div className="chance-indicator" aria-label="남은 기회">
-          <div className={dot0} title="1회차" />
-          <div className={dot1} title="재도전" />
+        <div className="chance-slots" aria-label="남은 기회">
+          <div className={dot0} aria-label="1회차">1회</div>
+          <div className={dot1} aria-label="재도전">재도전</div>
         </div>
         <p className="chance-label">{chanceLabel}</p>
 
