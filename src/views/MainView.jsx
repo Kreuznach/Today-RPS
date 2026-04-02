@@ -6,6 +6,7 @@ import React, { useMemo, useState } from 'react';
 import { useApp } from '../context/AppContext.jsx';
 import { CHOICE_EMOJI, watchAd, closeApp } from '../lib/config.js';
 import { todayString } from '../lib/game.js';
+import changelogs from '../data/changelogs.json';
 
 export default function MainView() {
   const { goTo, userId, todayStatus, showToast } = useApp();
@@ -140,6 +141,21 @@ export default function MainView() {
           </svg>
           내 기록 보기
         </button>
+
+        {/* 최근 업데이트 */}
+        {changelogs.length > 0 && (
+          <section className="changelog-section" aria-label="최근 업데이트">
+            <p className="changelog-title">최근 업데이트</p>
+            <ul className="changelog-list">
+              {changelogs.map((item, i) => (
+                <li key={i} className="changelog-item">
+                  <span className="changelog-date">{item.date}</span>
+                  <span className="changelog-msg">{item.message}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
       </main>
     </div>
   );

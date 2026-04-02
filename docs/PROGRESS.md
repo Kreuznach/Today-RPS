@@ -1,6 +1,6 @@
 # Today RPS — 진행 상황 & 체크리스트
 
-> 최종 갱신: 2026-04-01  |  현재 버전: **v0.9.4** (UI 개선 — 기회 표시 칩화, 명예의 전당 아이콘 교체)
+> 최종 갱신: 2026-04-03  |  현재 버전: **v0.9.5** (명예의 전당 TOP 5 → TOP 10 확장)
 
 ---
 
@@ -22,6 +22,8 @@
 - [x] **004_fix_trigger_security.sql** — 트리거 함수에 `SECURITY DEFINER` 적용 (anon 권한 우회)
 - [x] **005_recreate_functions_security_definer.sql** — `fn_refresh_hall_of_fame` / `fn_update_streaks` 완전 재정의 (ALTER FUNCTION 불안정 이슈 해소)
 - [x] **006_fix_foreach_datatype.sql** — `FOREACH` `42804 datatype_mismatch` 버그 수정 → `FOR i IN 1..6` 인덱스 순환으로 교체
+- [x] **007_play_streak_min_threshold.sql** — `play_streak` 최소 집계 기준 10일 적용
+- [x] **008_hall_of_fame_top10.sql** — `fn_refresh_hall_of_fame` `LIMIT 5` → `LIMIT 10` 변경 (TOP 10 확장)
 
 ### 프론트엔드 구조
 - [x] `AppContext.jsx` — 전역 상태 (뷰 라우팅, userId, todayStatus, Toast)
@@ -47,6 +49,13 @@
 - [x] `views/HallOfFameView.jsx` — 본인 랭킹 항목에 `.hof-item--me` 클래스 + 👑 배지 표시
 - [x] `index.css` — `.hof-item--me` 레인보우 shimmer 그라디언트 테두리 + 골드 글로우 효과
 - [x] `views/ResultView.jsx` — 광고 재도전 시 총 시도 2회 기록 안내 문구 추가
+
+### 명예의 전당 TOP 10 확장 (v0.9.5 — 2026-04-03)
+- [x] **`supabase/migrations/008_hall_of_fame_top10.sql`** — `fn_refresh_hall_of_fame` `LIMIT 5 → LIMIT 10` 변경
+- [x] **`views/HallOfFameView.jsx`** — `RANK_EMOJI` 배열 5개 → 10개 확장 (`6️⃣`~`🔟` 추가)
+- [x] **`index.css`** — `.hof-rank.rank-6` ~ `.rank-10` 스타일 추가
+- [x] **`src/data/changelogs.json`** — 2026.04.03 업데이트 항목 추가
+- [x] **`index.css`** — `.hof-tabs`에 `position: sticky; top: 56px` 적용 (10개 리스트 스크롤 시 탭 가려짐 현상 수정)
 
 ### 심사 반려 대응 (v0.9.2 — 2026-03-27)
 - [x] **줌 제스처 비활성화** — `index.html` viewport 메타에 `maximum-scale=1.0, user-scalable=no` 추가
@@ -112,6 +121,10 @@
 | 2026-03-27 | 심사 반려 — 중복 뒤로가기 버튼 | 네이티브 nav bar 백버튼 + in-app TopBar 백버튼 동시 노출 | `granite.config.js` `navigationBar.withBackButton: false` + MainView 헤더 종료 버튼 교체 |
 | 2026-03-27 | `goTo()` prevView 미저장 (내비게이션 버그) | `setPrevView(v => v)` 가 현재 view를 캡처하지 못함 | functional update `setView(cur => { setPrevView(cur); return next; })` 로 수정 |
 | 2026-03-27 | 테스트 시 실제 광고 ID 사용 → 정책 위반 위험 | `AD_GROUP_ID` 단일 값으로 환경 구분 불가 | `VITE_AD_ENV` 환경변수 + `import.meta.env.DEV` 자동 판별로 TEST/PROD ID 분리 |
+| 2026-04-02 | KST 00:00 자정 기준 날짜 오류 | `getLocalKSTDate()` 내 `.toISOString()` UTC 변환으로 전날 날짜 반환 | `Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul' })` 로 교체 |
+| 2026-04-02 | `.ait` 업로드 시 `deploymentId를 찾을 수 없다` | 커스텀 스크립트가 단순 ZIP 생성 (AITBUNDL 바이너리 헤더 미포함) | `build:ait` 스크립트를 `node_modules/.bin/ait build` 로 교체 |
+| 2026-04-03 | 기록 저장 중 `[23514]` check_violation | `hall_of_fame.rank CHECK (rank BETWEEN 1 AND 5)` 제약이 남아 있어 6~10위 INSERT 실패 | `008` 마이그레이션에 `DROP/ADD CONSTRAINT` 추가 (1~10 으로 확장) |
+| 2026-04-03 | 명예의 전당 카테고리 탭이 스크롤 시 가려짐 (2차) | `.view`의 `flex + overflow-y: auto`에서 `sticky`가 동작하지 않는 구조적 문제 | `hof-view` 클래스 추가 → `.view` overflow 제거, `.hof-content`를 스크롤 컨테이너로 변경 |
 
 ---
 
@@ -142,6 +155,8 @@ Today-RPS/
 │       ├── ResultView.jsx         ✅
 │       ├── HallOfFameView.jsx     ✅
 │       └── MyRecordsView.jsx      ✅
+├── data/
+│   └── changelogs.json            ✅ 앱 내 최근 업데이트 표시용
 └── supabase/
     └── migrations/
         ├── 001_schema.sql         ✅ 적용 완료
@@ -149,7 +164,9 @@ Today-RPS/
         ├── 003_rls_policies.sql   ✅ 적용 완료
         ├── 004_fix_trigger_security.sql            ✅ 적용 완료
         ├── 005_recreate_functions_security_definer.sql ✅ 적용 완료
-        └── 006_fix_foreach_datatype.sql            ✅ 적용 완료
+        ├── 006_fix_foreach_datatype.sql            ✅ 적용 완료
+        ├── 007_play_streak_min_threshold.sql       ✅ 적용 완료
+        └── 008_hall_of_fame_top10.sql              ⬜ 적용 필요
 ```
 
 ---

@@ -9,7 +9,7 @@ import { HOF_CATEGORIES, HOF_UNITS } from '../lib/config.js';
 import { fetchHallOfFame } from '../lib/supabase.js';
 import { formatDate, escHtml } from '../lib/game.js';
 
-const RANK_EMOJI = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣'];
+const RANK_EMOJI = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟'];
 
 export default function HallOfFameView() {
   const { showToast, userId } = useApp();
@@ -26,7 +26,7 @@ export default function HallOfFameView() {
   }, [activeCat]);
 
   return (
-    <div className="view active">
+    <div className="view active hof-view">
       <TopBar title="명예의 전당" />
 
       <nav className="hof-tabs" role="tablist" aria-label="명예의 전당 카테고리">
@@ -66,7 +66,7 @@ export default function HallOfFameView() {
                 {row.user_id === userId && (
                   <span className="hof-me-badge">👑 나</span>
                 )}
-                <div className={`hof-rank rank-${row.rank}`}>
+                <div className={`hof-rank rank-${Math.min(row.rank, 10)}`}>
                   {RANK_EMOJI[i] ?? row.rank}
                 </div>
                 <div className="hof-info">

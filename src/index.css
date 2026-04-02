@@ -207,6 +207,24 @@ svg    { display: block; }
 .today-result-preview.lose { background: var(--red-light);    color: var(--red);    border-color: var(--red); }
 .today-result-preview.draw { background: var(--yellow-light); color: var(--yellow); border-color: var(--yellow); }
 
+/* ── Changelog ─────────────────────────────────────────── */
+.changelog-section {
+  width: 100%; padding: 14px 16px;
+  background: var(--surface); border-radius: var(--radius-md);
+  border: 1px solid var(--gray-200); box-shadow: var(--shadow-sm);
+}
+.changelog-title {
+  font-size: 12px; font-weight: 700; color: var(--gray-400);
+  text-transform: uppercase; letter-spacing: .6px; margin-bottom: 10px;
+}
+.changelog-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.changelog-item { display: flex; gap: 10px; align-items: baseline; }
+.changelog-date {
+  flex-shrink: 0; font-size: 11px; font-weight: 600;
+  color: var(--gray-400); white-space: nowrap;
+}
+.changelog-msg { font-size: 13px; color: var(--gray-600); line-height: 1.5; }
+
 /* ── Game View ─────────────────────────────────────────── */
 .game-content {
   flex: 1; display: flex; flex-direction: column; align-items: center;
@@ -312,10 +330,15 @@ svg    { display: block; }
 .btn-ad:disabled { opacity: .5; cursor: not-allowed; transform: none; }
 
 /* ── Hall of Fame ──────────────────────────────────────── */
+/* hof-view: 탭을 스크롤 영역 밖에 고정하기 위해 view 자체는 스크롤 안 함 */
+.hof-view { overflow: hidden; }
+.hof-view .hof-content { flex: 1; overflow-y: auto; }
+
 .hof-tabs {
   display: flex; overflow-x: auto; padding: 12px 16px; gap: 8px;
   background: var(--surface); border-bottom: 1px solid var(--gray-200);
   scrollbar-width: none;
+  flex-shrink: 0;
 }
 .hof-tabs::-webkit-scrollbar { display: none; }
 .hof-tab {
@@ -332,7 +355,7 @@ svg    { display: block; }
   background: var(--gray-100); border-bottom: 1px solid var(--gray-200);
   text-align: center;
 }
-.hof-content  { flex: 1; padding: 20px 16px; }
+.hof-content  { flex: 1; padding: 20px 16px; overflow-y: auto; }
 .hof-list     { display: flex; flex-direction: column; gap: 10px; }
 .hof-loading  { display: flex; justify-content: center; padding: 48px; }
 .hof-empty    { text-align: center; padding: 48px 0; color: var(--gray-400); font-size: 15px; }
@@ -382,7 +405,12 @@ svg    { display: block; }
 .hof-rank.rank-2 { background: #E8E8E8; color: #4A4A4A; }
 .hof-rank.rank-3 { background: #FFDBBF; color: #7A3B00; }
 .hof-rank.rank-4,
-.hof-rank.rank-5 { background: var(--gray-100); color: var(--gray-600); font-size: 15px; }
+.hof-rank.rank-5,
+.hof-rank.rank-6,
+.hof-rank.rank-7,
+.hof-rank.rank-8,
+.hof-rank.rank-9,
+.hof-rank.rank-10 { background: var(--gray-100); color: var(--gray-600); font-size: 15px; }
 .hof-info       { flex: 1; min-width: 0; }
 .hof-name       { font-size: 15px; font-weight: 700; color: var(--gray-900); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .hof-date       { font-size: 12px; color: var(--gray-400); margin-top: 2px; }
