@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "build:ait": "node_modules/.bin/ait build"
+    "build:ait": "ait build"
   },
   "dependencies": {
     "@apps-in-toss/web-framework": "^2.1.0",

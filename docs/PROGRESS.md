@@ -1,6 +1,6 @@
 # Today RPS — 진행 상황 & 체크리스트
 
-> 최종 갱신: 2026-04-03  |  현재 버전: **v0.9.5** (명예의 전당 TOP 5 → TOP 10 확장)
+> 최종 갱신: 2026-07-24  |  현재 버전: **v0.9.5** (명예의 전당 TOP 5 → TOP 10 확장)
 
 ---
 
@@ -125,6 +125,7 @@
 | 2026-04-02 | `.ait` 업로드 시 `deploymentId를 찾을 수 없다` | 커스텀 스크립트가 단순 ZIP 생성 (AITBUNDL 바이너리 헤더 미포함) | `build:ait` 스크립트를 `node_modules/.bin/ait build` 로 교체 |
 | 2026-04-03 | 기록 저장 중 `[23514]` check_violation | `hall_of_fame.rank CHECK (rank BETWEEN 1 AND 5)` 제약이 남아 있어 6~10위 INSERT 실패 | `008` 마이그레이션에 `DROP/ADD CONSTRAINT` 추가 (1~10 으로 확장) |
 | 2026-04-03 | 명예의 전당 카테고리 탭이 스크롤 시 가려짐 (2차) | `.view`의 `flex + overflow-y: auto`에서 `sticky`가 동작하지 않는 구조적 문제 | `hof-view` 클래스 추가 → `.view` overflow 제거, `.hof-content`를 스크롤 컨테이너로 변경 |
+| 2026-07-24 | Windows에서 `npm run build:ait` 시 `'node_modules'은(는) ... 아닙니다` | `build:ait` 스크립트가 `node_modules/.bin/ait build` 슬래시 경로로 작성되어 Windows 기본 셸(`cmd.exe`)이 `/`를 스위치로 오인식 | `build:ait` 스크립트를 `ait build`로 변경 (npm이 `node_modules/.bin`을 PATH에 자동 추가하므로 OS 무관하게 동작) |
 
 ---
 

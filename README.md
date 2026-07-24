@@ -91,6 +91,28 @@ npm run build:ait
 
 Toss In-App Builder 콘솔에서 `today-rps.ait` 파일을 업로드하세요.
 
+#### ⚠️ Windows에서 `'node_modules'은(는) ... 아닙니다` 오류가 날 때
+
+```
+> today-rps@1.0.0 build:ait
+> node_modules/.bin/ait build
+
+'node_modules'은(는) 내부 또는 외부 명령, 실행할 수 있는 프로그램, 또는
+배치 파일이 아닙니다.
+```
+
+- **원인**: `package.json`의 `build:ait` 스크립트가 `node_modules/.bin/ait build`처럼 **슬래시(`/`) 경로**로 작성되어 있었습니다. npm 스크립트는 Windows에서 기본적으로 `cmd.exe`로 실행되는데, `cmd.exe`는 `/`를 스위치 구분자로 해석해 `node_modules`를 실행 파일명으로, `.bin/ait`를 스위치로 잘못 인식합니다. (macOS/Linux의 `sh`에서는 문제없이 동작하던 스크립트라 OS 차이로 드러난 문제입니다.)
+- **해결**: `build:ait` 스크립트를 경로 없이 `ait build`로 변경했습니다. npm은 스크립트 실행 시 `node_modules/.bin`을 `PATH`에 자동으로 추가하므로 OS와 무관하게 동작합니다.
+
+```jsonc
+// package.json
+"scripts": {
+  "build:ait": "ait build"
+}
+```
+
+수정 후 다시 `npm run build:ait`를 실행하면 정상적으로 `today-rps.ait`가 생성됩니다 (빌드 로그에 `AIT build completed (today-rps.ait)`와 `deploymentId` 값이 출력되면 성공입니다).
+
 ---
 
 ## 화면 구성
