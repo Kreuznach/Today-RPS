@@ -1,6 +1,6 @@
 # 하루 한 번 가위바위보 (Today RPS)
 
-> Toss In-App WebView 기반 일일 가위바위보 게임  
+> Toss In-App WebView 기반 하루 한 판 가위바위보 게임  
 > **스택: Vite + React 18 + Supabase** | 빌드 결과물: `today-rps.ait`
 
 ---
@@ -9,7 +9,7 @@
 
 `.ait` = Toss In-App Builder에 업로드하는 **웹 번들 ZIP 아카이브**  
 내부 구조: `index.html` + CSS + JS 정적 파일 (WebView에서 실행)  
-React Native가 아닌 **웹 기술(React Web)**을 사용합니다.
+React Native가 아닌 **웹 기술(React Web)**을 사용한다.
 
 ---
 
@@ -89,7 +89,7 @@ npm run build:ait
 # → today-rps.ait 생성
 ```
 
-Toss In-App Builder 콘솔에서 `today-rps.ait` 파일을 업로드하세요.
+Toss In-App Builder 콘솔에서 `today-rps.ait` 파일을 업로드한다.
 
 #### ⚠️ Windows에서 `'node_modules'은(는) ... 아닙니다` 오류가 날 때
 
@@ -119,10 +119,10 @@ Toss In-App Builder 콘솔에서 `today-rps.ait` 파일을 업로드하세요.
 
 | 화면 | 설명 |
 |---|---|
-| **메인** | 오늘 날짜, 남은 기회(도트), 게임 시작 버튼, 오늘 결과 미리보기 |
+| **메인** | 오늘 날짜, 남은 기회(칩), 게임 시작 버튼, 오늘 결과 미리보기 |
 | **게임** | 가위/바위/보 선택, VS 애니메이션, 카운트다운 바 |
 | **결과** | 승/패/무 표시, 컨페티 효과, 연속 기록 업데이트, 광고 재도전 버튼 |
-| **명예의 전당** | 카테고리 6종 탭, TOP 5 랭킹 |
+| **명예의 전당** | 카테고리 6종 탭, TOP 10 랭킹 |
 | **내 기록** | 누적 통계, 승률 바, 연속 기록 최고값 |
 
 ---
@@ -140,7 +140,7 @@ Toss In-App Builder 콘솔에서 `today-rps.ait` 파일을 업로드하세요.
 
 ## Toss SDK 연동 (프로덕션)
 
-`src/lib/config.js`의 주석 처리된 코드를 활성화합니다:
+`src/lib/config.js`의 주석 처리된 코드를 활성화한다.
 
 ```js
 export function getTossUserId() {

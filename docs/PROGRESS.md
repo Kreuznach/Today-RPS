@@ -1,6 +1,8 @@
 # Today RPS — 진행 상황 & 체크리스트
 
-> 최종 갱신: 2026-07-24  |  현재 버전: **v0.9.5** (명예의 전당 TOP 5 → TOP 10 확장)
+> 최종 갱신: 2026-08-19  |  현재 버전: **v0.9.5** (명예의 전당 TOP 5 → TOP 10 확장)
+>
+> 성장·확장 아이디어: [GROWTH_AND_CONTENT.md](GROWTH_AND_CONTENT.md)
 
 ---
 
@@ -31,7 +33,7 @@
 - [x] `MainView.jsx` — 메인 화면 (날짜 배지, 기회 표시, 게임 시작/광고 재도전)
 - [x] `GameView.jsx` — 가위바위보 선택, 컴퓨터 AI, 카운트다운 애니메이션
 - [x] `ResultView.jsx` — 승/패/무 결과, 컨페티, 광고 재도전 버튼
-- [x] `HallOfFameView.jsx` — 카테고리 탭 + TOP 5 랭킹
+- [x] `HallOfFameView.jsx` — 카테고리 탭 + TOP 10 랭킹
 - [x] `MyRecordsView.jsx` — 누적 통계 + 연속 기록 표시
 - [x] `TopBar.jsx` — 공통 헤더 컴포넌트 (뒤로 버튼)
 - [x] `Toast.jsx` — 전역 토스트 알림
@@ -43,7 +45,7 @@
 - [x] `.env.example` — `VITE_AD_ENV` 항목 추가 (test / production / 미설정)
 - [x] `lib/game.js` — 게임 순수 로직 (가위바위보 판정, streak 메시지, confetti, 날짜 포맷)
 - [x] `lib/supabase.js` — REST API 래퍼 (`getOrCreateUser`, `getTodayStatus`, `saveGameRecord`, `fetchHallOfFame`, `fetchMyStreaks`)
-- [x] `lib/config.js` — `getTossNickname()` localStorage 캐시 제거 → `generateNickname()` 로 개명, DB 저장 시에만 호출 (사용자별 고유 닉네임 보장)
+- [x] `lib/config.js` — `getTossNickname()` localStorage 캐시 제거 → `generateNickname()`로 개명, DB 저장 시에만 호출 (사용자별 고유 닉네임 보장)
 - [x] `lib/config.js` — `getTossUserId()` async 전환: `getUserKeyForGame()` → HASH 반환 시 사용, 폴백은 localStorage 게스트 ID
 - [x] `lib/supabase.js` — `fetchHallOfFame()` 쿼리에 `user_id` 추가
 - [x] `views/HallOfFameView.jsx` — 본인 랭킹 항목에 `.hof-item--me` 클래스 + 👑 배지 표시
@@ -75,8 +77,7 @@
 ### 테스트 광고 ID 분리 (v0.9.3 — 2026-03-27)
 - [x] **`lib/config.js`** — `AD_GROUP_ID_PROD` (`ait.v2.live.cacf10246e29481d`) / `AD_GROUP_ID_TEST` (`ait-ad-test-rewarded-id`) 분리 정의
 - [x] **`lib/config.js`** — `VITE_AD_ENV` 환경변수로 광고 ID 선택 (`test` / `production` / 미설정 시 `import.meta.env.DEV` 자동 판별)
-- [x] **`.env.example`** — `VITE_AD_ENV` 항목 및 사용법 주석 추가
-### CSS / 디자인
+- [x] **`.env.example`** — `VITE_AD_ENV` 항목 및 사용법 주석 추가### CSS / 디자인
 - [x] Toss 스타일 디자인 시스템 (CSS 변수, 컬러 팔레트)
 - [x] 뷰 전환 트랜지션 (slide + opacity)
 - [x] 반응형 레이아웃 (max-width 430px, 모바일 우선)
@@ -157,7 +158,7 @@ Today-RPS/
 │       ├── HallOfFameView.jsx     ✅
 │       └── MyRecordsView.jsx      ✅
 ├── data/
-│   └── changelogs.json            ✅ 앱 내 최근 업데이트 표시용
+│   └── changelogs.json            ✅ 앱 안 최근 업데이트 표시용
 └── supabase/
     └── migrations/
         ├── 001_schema.sql         ✅ 적용 완료
@@ -167,7 +168,7 @@ Today-RPS/
         ├── 005_recreate_functions_security_definer.sql ✅ 적용 완료
         ├── 006_fix_foreach_datatype.sql            ✅ 적용 완료
         ├── 007_play_streak_min_threshold.sql       ✅ 적용 완료
-        └── 008_hall_of_fame_top10.sql              ⬜ 적용 필요
+        └── 008_hall_of_fame_top10.sql              ✅ 적용 완료 (완료 항목 기준)
 ```
 
 ---
@@ -227,3 +228,5 @@ v0.9.0  현재  — .ait 빌드 성공, 광고 SDK 연동, DB 트리거 안정�
 4. **[중기 — v0.10.0]** 닉네임 편집 UI 추가
 5. **[중기]** `pg_cron` 익스텐션 활성화 및 HoF 자동 갱신 검증
 6. **[배포 전 — v1.0.0]** 프로덕션 환경변수 최종 점검 후 정식 릴리스
+
+성장·콘텐츠 백로그(공유 카드, 손 버릇 리포트, 시즌 랭킹 등)는 [GROWTH_AND_CONTENT.md](GROWTH_AND_CONTENT.md)를 본다.
