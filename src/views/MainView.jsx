@@ -6,13 +6,29 @@ import React, { useMemo, useState } from 'react';
 import { useApp } from '../context/AppContext.jsx';
 import { CHOICE_EMOJI, watchAd, closeApp } from '../lib/config.js';
 import { todayString } from '../lib/game.js';
+import { getLocalKSTDate } from '../lib/supabase.js';
+import {
+  APP_VERSION, weekdayTheme, todayHandHint, weekThemeHand,
+  playStreakDday, streakWarning, worldWinLine, teamLeadLine,
+} from '../lib/content.js';
 import changelogs from '../data/changelogs.json';
 
 export default function MainView() {
-  const { goTo, userId, todayStatus, showToast } = useApp();
+  const { goTo, todayStatus, streaks, dailyStats, online, showToast } = useApp();
   const [adLoading, setAdLoading] = useState(false);
 
   const status = todayStatus;
+  const theme = useMemo(() => weekdayTheme(), []);
+  const hint  = useMemo(() => todayHandHint(getLocalKSTDate()), []);
+  const week  = useMemo(() => weekThemeHand(), []);
+  const warn  = useMemo(
+    () => streakWarning({
+      playStreak: streaks?.play_streak,
+      winStreak: streaks?.win_streak,
+      playedToday: !!status?.playedToday,
+    }),
+    [streaks, status]
+  );
 
   const {
     btnLabel, btnDisabled, dot0, dot1, chanceLabel, preview,
@@ -103,10 +119,21 @@ export default function MainView() {
       <main className="main-content">
         <div className="date-badge">{todayString()}</div>
 
-        <div className="hero-card">
+        <div className={`hero-card theme-${theme.key}`}>
           <span className="hero-hands" aria-hidden="true">✊ ✌️ 🖐️</span>
-          <p className="hero-sub">오늘의 운을 시험해 보세요!</p>
+          <p className="hero-theme">{theme.name}</p>
+          <p className="hero-sub">{theme.hero}</p>
         </div>
+
+        {!online && (
+          <p className="status-banner warn">인터넷이 끊겼어요. 다시 연결되면 이어서 할 수 있어요.</p>
+        )}
+        {warn && <p className="status-banner">{warn}</p>}
+        <p className="hint-line">{hint.text}</p>
+        <p className="hint-line muted">{week.label} · {week.hint}</p>
+        {streaks && <p className="hint-line">{playStreakDday(streaks.play_streak)}</p>}
+        {worldWinLine(dailyStats) && <p className="hint-line">{worldWinLine(dailyStats)}</p>}
+        {teamLeadLine(dailyStats) && <p className="hint-line muted">{teamLeadLine(dailyStats)}</p>}
 
         <div className="chance-slots" aria-label="남은 기회">
           <div className={dot0} aria-label="1회차">1회</div>
@@ -145,7 +172,7 @@ export default function MainView() {
         {/* 최근 업데이트 */}
         {changelogs.length > 0 && (
           <section className="changelog-section" aria-label="최근 업데이트">
-            <p className="changelog-title">최근 업데이트</p>
+            <p className="changelog-title">앱 정보 · v{APP_VERSION}</p>
             <ul className="changelog-list">
               {changelogs.map((item, i) => (
                 <li key={i} className="changelog-item">

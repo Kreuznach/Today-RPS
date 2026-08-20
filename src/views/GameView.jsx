@@ -8,11 +8,14 @@ import { useApp } from '../context/AppContext.jsx';
 import { CHOICE_EMOJI } from '../lib/config.js';
 import { getComputerChoice, judgeResult } from '../lib/game.js';
 import { saveGameRecord, fetchMyStreaks } from '../lib/supabase.js';
+import { weekdayTheme, weekThemeHand } from '../lib/content.js';
 
 const THINKING_FRAMES = ['🤔', '😤', '🙄', '🧐'];
 
 export default function GameView({ isRetry = false }) {
-  const { goTo, userId, setTodayStatus, showToast } = useApp();
+  const { goTo, userId, setTodayStatus, refreshExtras, showToast } = useApp();
+  const theme = weekdayTheme();
+  const week  = weekThemeHand();
 
   const [playerHand,  setPlayerHand]  = useState('❓');
   const [compHand,    setCompHand]    = useState('❓');
@@ -76,6 +79,7 @@ export default function GameView({ isRetry = false }) {
       streaks = await fetchMyStreaks(userId);
       // TodayStatus 캐시 무효화 (홈으로 돌아갈 때 재조회)
       setTodayStatus(null);
+      try { await refreshExtras(userId); } catch (_) {}
     } catch (e) {
       console.error('[saveGameRecord error]', e);
       // 에러 코드를 토스트에 표시 — 원인 파악 후 일반 메시지로 교체
@@ -107,6 +111,7 @@ export default function GameView({ isRetry = false }) {
           </div>
         </div>
 
+        <p className="hint-line muted">{theme.name} · {week.label} (확률은 같아요)</p>
         <p className="pick-prompt">{prompt}</p>
 
         <div className="choices" role="group" aria-label="가위바위보 선택">

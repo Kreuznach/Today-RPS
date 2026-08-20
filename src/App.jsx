@@ -4,6 +4,7 @@
  *
  * 뷰 키:
  *   'loading'      — 초기 스플래시
+ *   'error'        — 연결 실패
  *   'main'         — 메인
  *   'game'         — 게임 (최초)
  *   'game-retry'   — 재도전 게임
@@ -14,6 +15,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { AppProvider, useApp } from './context/AppContext.jsx';
 import Toast from './components/Toast.jsx';
+import ErrorScreen    from './components/ErrorScreen.jsx';
 import MainView       from './views/MainView.jsx';
 import GameView       from './views/GameView.jsx';
 import ResultView     from './views/ResultView.jsx';
@@ -25,7 +27,7 @@ import { closeApp } from './lib/config.js';
 // 뷰 전환 래퍼 (CSS 트랜지션)
 // ─────────────────────────────────────────────────────────────
 function ViewRouter() {
-  const { view: rawView, goTo, goBack } = useApp();
+  const { view: rawView, goTo, goBack, online, retryBoot } = useApp();
 
   // view 값은 string 또는 { view, state } 객체
   const viewKey   = typeof rawView === 'string' ? rawView : rawView?.view;
@@ -78,6 +80,7 @@ function ViewRouter() {
   function renderView() {
     switch (displayed) {
       case 'loading':      return <LoadingView />;
+      case 'error':        return <ErrorScreen online={online} onRetry={retryBoot} />;
       case 'main':         return <MainView />;
       case 'game':         return <GameView isRetry={false} />;
       case 'game-retry':   return <GameView isRetry={true}  />;

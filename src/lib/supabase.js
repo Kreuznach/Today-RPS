@@ -5,6 +5,7 @@
 
 import { createClient } from '@supabase/supabase-js';
 import { SUPABASE_URL, SUPABASE_ANON_KEY, generateNickname } from './config.js';
+import { currentSeason, extraBadgeKeys, weekThemeHand } from './content.js';
 
 let _client = null;
 export function getClient() {
@@ -94,19 +95,37 @@ export async function saveGameRecord(userId, userChoice, compChoice, result, isR
     .update({ last_played_at: today })
     .eq('user_id', userId);
   if (uErr) throw uErr;
+
+  try {
+    await awardLocalBadges(userId);
+  } catch (_) { /* 배지 보강 실패는 판을 막지 않음 */ }
 }
 
 // ─────────────────────────────────────────
 // 명예의 전당
 // ─────────────────────────────────────────
-export async function fetchHallOfFame(category) {
-  const { data, error } = await getClient()
-    .from('hall_of_fame')
+export async function fetchHallOfFame(category, season = null) {
+  const table = season ? 'hall_of_fame_season' : 'hall_of_fame';
+  let q = getClient()
+    .from(table)
     .select('rank, user_id, record, achieved_at, users(nickname)')
     .eq('category', category)
     .order('rank', { ascending: true });
+  if (season) q = q.eq('season', season);
+  const { data, error } = await q;
   if (error) throw error;
   return data ?? [];
+}
+
+export async function fetchMyRank(userId, category, season = null) {
+  const { data, error } = await getClient()
+    .rpc('fn_my_rank', {
+      p_user_id: userId,
+      p_category: category,
+      p_season: season,
+    });
+  if (error) throw error;
+  return data ?? { rank: null, record: 0, min_needed: 0 };
 }
 
 // ─────────────────────────────────────────
@@ -117,4 +136,84 @@ export async function fetchMyStreaks(userId) {
     .from('streaks').select('*').eq('user_id', userId).single();
   if (error && error.code !== 'PGRST116') throw error;
   return data ?? null;
+}
+
+export async function fetchSeasonStreaks(userId, season = currentSeason()) {
+  const { data, error } = await getClient()
+    .from('season_streaks')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('season', season)
+    .maybeSingle();
+  if (error && error.code !== 'PGRST116') throw error;
+  return data ?? null;
+}
+
+export async function fetchMyRecords(userId, sinceDate = null) {
+  let q = getClient()
+    .from('game_records')
+    .select('user_choice, result, is_retry, played_at, created_at')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: true });
+  if (sinceDate) q = q.gte('played_at', sinceDate);
+  const { data, error } = await q;
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function fetchDailyStats(dateStr) {
+  const { data, error } = await getClient()
+    .from('daily_stats')
+    .select('*')
+    .eq('stat_date', dateStr)
+    .maybeSingle();
+  if (error && error.code !== 'PGRST116') throw error;
+  return data ?? null;
+}
+
+export async function fetchMyBadges(userId) {
+  const { data, error } = await getClient()
+    .from('user_badges')
+    .select('badge_key, earned_at')
+    .eq('user_id', userId)
+    .order('earned_at', { ascending: true });
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function updateNickname(userId, nickname) {
+  const { data, error } = await getClient()
+    .from('users')
+    .update({ nickname })
+    .eq('user_id', userId)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function updateTeamColor(userId, teamColor) {
+  const { data, error } = await getClient()
+    .from('users')
+    .update({ team_color: teamColor })
+    .eq('user_id', userId)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function awardBadges(userId, keys = []) {
+  if (!keys.length) return;
+  const rows = keys.map((badge_key) => ({ user_id: userId, badge_key }));
+  const { error } = await getClient()
+    .from('user_badges')
+    .upsert(rows, { onConflict: 'user_id,badge_key', ignoreDuplicates: true });
+  if (error) throw error;
+}
+
+async function awardLocalBadges(userId) {
+  const records = await fetchMyRecords(userId);
+  const keys = extraBadgeKeys({ records, weekHand: weekThemeHand().hand });
+  await awardBadges(userId, keys);
 }

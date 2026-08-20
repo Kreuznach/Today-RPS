@@ -1,8 +1,19 @@
-# Today RPS — 진행 상황 & 체크리스트
+# Today RPS — 지금 어디까지 했나
 
-> 최종 갱신: 2026-08-19  |  현재 버전: **v0.9.5** (명예의 전당 TOP 5 → TOP 10 확장)
+> 마지막 고친 날: 2026-08-20  |  지금 버전: **v0.14.0**
 >
-> 성장·확장 아이디어: [GROWTH_AND_CONTENT.md](GROWTH_AND_CONTENT.md)
+> 쉬운 말: 하루 한 판 규칙은 그대로입니다. 이름·배지·이달 순위처럼 **보여줄 기록**만 늘렸습니다.
+>
+> 성장 아이디어: [GROWTH_AND_CONTENT.md](GROWTH_AND_CONTENT.md)
+
+### v0.14.0에서 새로 된 것
+- 이름 바꾸기 (한국 시간 하루 1번)
+- 연결 실패 화면 (오늘 기회는 서버에 남음)
+- 결과 공유 카드 (사용자 번호 없음)
+- 손 버릇, 주간 요약, 출석 D-day, 내 순위
+- 배지, 요일 옷, 오늘의 손 힌트(확률 그대로)
+- 이달 명예의 전당, 응원 색
+- SQL: [009_growth_features.sql](../supabase/migrations/009_growth_features.sql) (대시보드에서 실행)
 
 ---
 
@@ -26,6 +37,7 @@
 - [x] **006_fix_foreach_datatype.sql** — `FOREACH` `42804 datatype_mismatch` 버그 수정 → `FOR i IN 1..6` 인덱스 순환으로 교체
 - [x] **007_play_streak_min_threshold.sql** — `play_streak` 최소 집계 기준 10일 적용
 - [x] **008_hall_of_fame_top10.sql** — `fn_refresh_hall_of_fame` `LIMIT 5` → `LIMIT 10` 변경 (TOP 10 확장)
+- [x] **009_growth_features.sql** — 닉네임 하루 1회, 배지, 오늘 통계, 이달 랭킹 (대시보드 실행 필요)
 
 ### 프론트엔드 구조
 - [x] `AppContext.jsx` — 전역 상태 (뷰 라우팅, userId, todayStatus, Toast)
@@ -95,9 +107,9 @@
 ## 🔲 미완료 / 진행 중
 
 ### 기능 미구현
-- [ ] Toss In-App SDK 연동 (`getTossUserId()` — ~~현재 `localStorage` 기반 게스트 ID 폴백 사용 중~~ → v0.9.1에서 `getUserKeyForGame()` 연동 완료, 폴백 유지)
-- [ ] 닉네임 편집 UI (현재 자동 생성만 지원)
-- [ ] 오프라인/네트워크 오류 UI 개선 (현재 Toast만 표시)
+- [x] 닉네임 편집 UI (v0.14.0)
+- [x] 오프라인/네트워크 오류 UI (v0.14.0)
+- [ ] Toss 계정과 게스트 기록 합치기 (콘솔·운영 작업)
 - [ ] Supabase `pg_cron` 익스텐션 활성화 확인 (HoF 자동 갱신)
 
 ### 빌드/배포
@@ -136,7 +148,7 @@
 Today-RPS/
 ├── index.html
 ├── vite.config.js
-├── package.json                   v0.9.0
+├── package.json                   v0.14.0 기능은 앱 안 APP_VERSION
 ├── .env.local                     ✅ Supabase 연결 정보
 ├── src/
 │   ├── main.jsx
@@ -168,7 +180,8 @@ Today-RPS/
         ├── 005_recreate_functions_security_definer.sql ✅ 적용 완료
         ├── 006_fix_foreach_datatype.sql            ✅ 적용 완료
         ├── 007_play_streak_min_threshold.sql       ✅ 적용 완료
-        └── 008_hall_of_fame_top10.sql              ✅ 적용 완료 (완료 항목 기준)
+        ├── 008_hall_of_fame_top10.sql              ✅ 적용 완료
+        └── 009_growth_features.sql                 ⬜ 대시보드에서 실행
 ```
 
 ---
@@ -185,16 +198,9 @@ Today-RPS/
 
 ### 현재 버전 로드맵
 
-```
-v0.9.0  현재  — .ait 빌드 성공, 광고 SDK 연동, DB 트리거 안정화
-  │
-  ├─ v0.9.1  PATCH — Toss JWT 기반 getTossUserId() 연동
-  ├─ v0.9.2  PATCH — RLS 정책 Toss JWT 교체 + pg_cron 확인
-  │
-  ├─ v0.10.0 MINOR — 닉네임 편집 UI 추가
-  ├─ v0.11.0 MINOR — 오프라인 에러 UI 개선
-  │
-  └─ v1.0.0  MAJOR — Toss 미니앱 스토어 정식 출시
+```5  명예의 전당 TOP 10
+v0.14.0 성장 묶음 — 이름, 공유, 오류 화면, 배지, 이달 순위
+v1.0.0  스토어 출시 (JWT·검수는 코드 밖 작업
                       (실 SDK 완전 연동 + RLS 프로덕션 설정 완료)
 ```
 

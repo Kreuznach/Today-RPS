@@ -6,10 +6,11 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useApp } from '../context/AppContext.jsx';
 import { CHOICE_EMOJI, RESULT_MAP, watchAd } from '../lib/config.js';
 import { buildStreakMessage, launchConfetti } from '../lib/game.js';
-import { getTodayStatus } from '../lib/supabase.js';
+import { fortuneCopy, worldWinLine, weekThemeHand } from '../lib/content.js';
+import { shareResultCard } from '../lib/share.js';
 
 export default function ResultView({ state }) {
-  const { goTo, userId, setTodayStatus, refreshTodayStatus, showToast } = useApp();
+  const { goTo, refreshTodayStatus, dailyStats, showToast } = useApp();
   const burstRef   = useRef(null);
   const [adLoading, setAdLoading] = useState(false);
 
@@ -17,6 +18,8 @@ export default function ResultView({ state }) {
   const info         = RESULT_MAP[result] ?? RESULT_MAP['draw'];
   const streakMsg    = buildStreakMessage(result, isRetry, streaks);
   const showAdRetry  = !isRetry && result !== 'win';
+  const week = weekThemeHand();
+  const world = worldWinLine(dailyStats);
 
   // Confetti
   useEffect(() => {
@@ -50,6 +53,7 @@ export default function ResultView({ state }) {
           <div className="result-emoji">{info.emoji}</div>
           <h2 className={`result-title ${info.cls}`}>{info.title}</h2>
           <p className="result-sub">{info.sub}</p>
+          <p className="result-fortune">{fortuneCopy(result)}</p>
         </div>
 
         <div className="result-matchup">
@@ -67,6 +71,27 @@ export default function ResultView({ state }) {
         {streakMsg && (
           <div className="streak-update" aria-live="polite">{streakMsg}</div>
         )}
+        {isRetry && result === 'win' && streaks?.retry_wins > 0 && (
+          <p className="hint-line">🎲 광고 역전 {streaks.retry_wins}회째</p>
+        )}
+        {result === 'win' && userChoice === week.hand && (
+          <p className="hint-line">{week.label} 손으로 이겼어요. 점수는 그대로, 배지만 받아요.</p>
+        )}
+        {world && <p className="hint-line muted">{world}</p>}
+
+        <button
+          className="btn-secondary"
+          onClick={async () => {
+            const r = await shareResultCard({
+              result, userChoice, compChoice,
+              winStreak: streaks?.win_streak ?? 0,
+            }).catch(() => 'unsupported');
+            if (r === 'copied') showToast('공유 문장을 복사했어요.');
+            else if (r === 'unsupported') showToast('이 기기에서는 공유를 쓸 수 없어요.');
+          }}
+        >
+          오늘 결과 공유
+        </button>
 
         {showAdRetry && (
           <div className="ad-retry-section">

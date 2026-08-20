@@ -31,7 +31,7 @@ export function buildStreakMessage(result, isRetry, streaks) {
   } else if (result === 'draw' && streaks.draw_streak > 1) {
     msgs.push(`🤝 연속 무승부 ${streaks.draw_streak}회`);
   }
-  if (streaks.play_streak >= 20) msgs.push(`📅 ${streaks.play_streak}일 연속 출석 중!`);
+  if (streaks.play_streak >= 10) msgs.push(`📅 ${streaks.play_streak}일 연속 출석 중!`);
   return msgs.join('  ·  ');
 }
 

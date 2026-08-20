@@ -6,7 +6,7 @@ import React, {
   createContext, useContext, useState, useEffect, useCallback, useRef,
 } from 'react';
 import { getTossUserId } from '../lib/config.js';
-import { getOrCreateUser, getTodayStatus } from '../lib/supabase.js';
+import { getOrCreateUser, getTodayStatus, fetchMyStreaks, fetchDailyStats, getLocalKSTDate } from '../lib/supabase.js';
 
 const AppContext = createContext(null);
 
@@ -15,6 +15,12 @@ export function AppProvider({ children }) {
   const [prevView,    setPrevView]    = useState(null);
   const [userId,      setUserId]      = useState(null);
   const [todayStatus, setTodayStatus] = useState(null);
+  const [streaks,     setStreaks]     = useState(null);
+  const [dailyStats,  setDailyStats]  = useState(null);
+  const [bootError,   setBootError]   = useState(null);
+  const [online,      setOnline]      = useState(
+    typeof navigator === 'undefined' ? true : navigator.onLine
+  );
   const [toast,       setToast]       = useState({ msg: '', visible: false });
   const toastTimer = useRef(null);
 
@@ -54,26 +60,58 @@ export function AppProvider({ children }) {
     }
   }, [userId]);
 
+  const refreshExtras = useCallback(async (uid) => {
+    const id = uid ?? userId;
+    if (!id) return;
+    try {
+      const [s, d] = await Promise.all([
+        fetchMyStreaks(id),
+        fetchDailyStats(getLocalKSTDate()),
+      ]);
+      setStreaks(s);
+      setDailyStats(d);
+    } catch (e) {
+      console.error(e);
+    }
+  }, [userId]);
+
+  const boot = useCallback(async () => {
+    setView('loading');
+    setBootError(null);
+    try {
+      const uid = await getTossUserId();
+      setUserId(uid);
+      await getOrCreateUser(uid);
+      await refreshTodayStatus(uid);
+      await refreshExtras(uid);
+      setView('main');
+    } catch (e) {
+      console.error('초기화 오류:', e);
+      setBootError(e);
+      setView('error');
+    }
+  }, [refreshTodayStatus, refreshExtras]);
+
+  useEffect(() => {
+    function onOnline() { setOnline(true); }
+    function onOffline() { setOnline(false); }
+    window.addEventListener('online', onOnline);
+    window.addEventListener('offline', onOffline);
+    return () => {
+      window.removeEventListener('online', onOnline);
+      window.removeEventListener('offline', onOffline);
+    };
+  }, []);
+
   // ── 초기화 ────────────────────────────────────────
   useEffect(() => {
-    (async () => {
-      try {
-        const uid = await getTossUserId();
-        setUserId(uid);
-        await getOrCreateUser(uid);
-        await refreshTodayStatus(uid);
-      } catch (e) {
-        console.error('초기화 오류:', e);
-        showToast('서버에 연결하지 못했어요. 잠시 후 다시 시도해 주세요.');
-      } finally {
-        setView('main');
-      }
-    })();
+    boot();
   }, []); // eslint-disable-line
 
   const value = {
     view, goTo, goBack,
-    userId, todayStatus, setTodayStatus, refreshTodayStatus,
+    userId, todayStatus, setTodayStatus, refreshTodayStatus, refreshExtras,
+    streaks, dailyStats, bootError, online, retryBoot: boot,
     toast, showToast,
   };
 

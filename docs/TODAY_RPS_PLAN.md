@@ -1,10 +1,11 @@
 # 하루 한 번 가위바위보 (Today RPS)
 > Toss In-App 제작 기획서
 
-> **현황 주석 (2026-08-19):** 아래 본문은 초기 기획안이다. 구현과 달라진 핵심만 적는다.
+> **현황 주석 (2026-08-20):** 아래 본문은 초기 기획안이다. 구현과 달라진 핵심만 적는다.
 > - 명예의 전당: 기획 TOP 5 → 구현 **TOP 10** ([008_hall_of_fame_top10.sql](../supabase/migrations/008_hall_of_fame_top10.sql))
 > - 연속 플레이 집계 하한: 기획 20일 → 구현 **10일** ([007_play_streak_min_threshold.sql](../supabase/migrations/007_play_streak_min_threshold.sql))
 > - 날짜 기준: 기획 ‘서버 시각’ → 구현 **KST(Asia/Seoul) 자정**
+> - v0.14.0: 이름 편집, 배지, 이달 전당, 오늘 통계 ([009_growth_features.sql](../supabase/migrations/009_growth_features.sql))
 > - 성장·확장 아이디어는 [GROWTH_AND_CONTENT.md](GROWTH_AND_CONTENT.md)를 본다.
 
 ---
@@ -74,6 +75,7 @@
 [내 기록]
  └─ 나의 현재 연속 기록
  └─ 누적 통계 (총 플레이 / 승 / 패 / 무)
+ └─ 이름 바꾸기, 배지, 손 버릇, 이번 주 요약
 ```
 
 ---

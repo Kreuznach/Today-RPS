@@ -1,7 +1,10 @@
 # 하루 한 번 가위바위보 (Today RPS)
 
-> Toss In-App WebView 기반 하루 한 판 가위바위보 게임  
-> **스택: Vite + React 18 + Supabase** | 빌드 결과물: `today-rps.ait`
+> Toss 미니앱(웹뷰)에서 돌아가는 **하루 한 판** 가위바위보입니다.  
+> **쓰는 도구: Vite + React 18 + Supabase** | 올리는 파일: `today-rps.ait`  
+> **지금 버전: v0.14.0** (이름 바꾸기, 배지, 이달 순위)
+
+쉬운 규칙: 하루에 한 번만 냅니다. 결과가 아쉬우면 광고를 보고 **딱 한 번** 더 낼 수 있습니다.
 
 ---
 
@@ -43,8 +46,8 @@ Today-RPS/
 │       ├── HallOfFameView.jsx    # 명예의 전당
 │       └── MyRecordsView.jsx     # 내 기록
 └── supabase/migrations/
-    ├── 001_schema.sql            # 테이블 정의
-    └── 002_triggers.sql          # 트리거, RLS, 자정 초기화
+    ├── 001_schema.sql … 008_*.sql   # 기본 테이블과 순위
+    └── 009_growth_features.sql      # 배지, 이달 순위 (SQL 편집기에서 실행)
 ```
 
 ---
@@ -53,17 +56,10 @@ Today-RPS/
 
 ### 1. Supabase 설정
 
-```sql
--- Supabase SQL Editor에서 순서대로 실행
-\i supabase/migrations/001_schema.sql
-\i supabase/migrations/002_triggers.sql
-
--- 자정 초기화 Cron (pg_cron 활성화 후)
-SELECT cron.schedule(
-  'daily-retry-reset',
-  '0 15 * * *',   -- UTC 15:00 = KST 00:00
-  'SELECT fn_daily_reset()'
-);
+```text
+Supabase 대시보드 → SQL Editor
+001 부터 009 까지 번호 순서대로 붙여 넣고 Run 합니다.
+009 를 빼먹으면 이름 바꾸기·배지·이달 순위가 저장되지 않습니다.
 ```
 
 ### 2. 환경변수 설정
@@ -126,11 +122,11 @@ Toss In-App Builder 콘솔에서 `today-rps.ait` 파일을 업로드한다.
 | **내 기록** | 누적 통계, 승률 바, 연속 기록 최고값 |
 
 ---
-
-## 어뷰징 방지
-
-| 항목 | 내용 |
-|---|---|
+, 요일 옷, 출석 D-day |
+| **게임** | 가위/바위/보 선택 (글자와 그림 같이) |
+| **결과** | 승/패/무, 공유 카드, 광고 재도전 |
+| **명예의 전당** | 통산 / 이달, TOP 10, 내 순위 |
+| **내 기록** | 통계, 이름, 배지, 손 버릇
 | 날짜 조작 | Supabase 서버 KST 기준 날짜 사용 |
 | 광고 우회 | `watchAd()` → Toss SDK 서버 검증 |
 | 자정 초기화 | `fn_daily_reset()` Cron (UTC 15:00) |

@@ -1,33 +1,65 @@
 /**
  * views/HallOfFameView.jsx
- * 명예의 전당 — 카테고리 탭 & TOP 5 랭킹
+ * 명예의 전당 — 카테고리 탭 & TOP 10 / 이달
  */
 import React, { useState, useEffect } from 'react';
 import TopBar from '../components/TopBar.jsx';
 import { useApp } from '../context/AppContext.jsx';
 import { HOF_CATEGORIES, HOF_UNITS } from '../lib/config.js';
-import { fetchHallOfFame } from '../lib/supabase.js';
-import { formatDate, escHtml } from '../lib/game.js';
+import { fetchHallOfFame, fetchMyRank } from '../lib/supabase.js';
+import { formatDate } from '../lib/game.js';
+import { currentSeason, SEASON_PLAY_STREAK_MIN } from '../lib/content.js';
 
 const RANK_EMOJI = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟'];
 
 export default function HallOfFameView() {
   const { showToast, userId } = useApp();
   const [activeCat, setActiveCat] = useState('win_streak');
+  const [scope,     setScope]     = useState('all'); // all | season
   const [rows,      setRows]      = useState(null); // null = loading
+  const [myRank,    setMyRank]    = useState(null);
+  const season = currentSeason();
 
   useEffect(() => {
     let cancelled = false;
     setRows(null);
-    fetchHallOfFame(activeCat)
-      .then(data => { if (!cancelled) setRows(data); })
-      .catch(e  => { console.error(e); if (!cancelled) setRows([]); showToast('랭킹을 불러오지 못했어요.'); });
+    setMyRank(null);
+    const seasonKey = scope === 'season' ? season : null;
+    Promise.all([
+      fetchHallOfFame(activeCat, seasonKey),
+      userId ? fetchMyRank(userId, activeCat, seasonKey).catch(() => null) : Promise.resolve(null),
+    ])
+      .then(([data, rank]) => {
+        if (cancelled) return;
+        setRows(data);
+        setMyRank(rank);
+      })
+      .catch((e) => {
+        console.error(e);
+        if (!cancelled) setRows([]);
+        showToast('랭킹을 불러오지 못했어요.');
+      });
     return () => { cancelled = true; };
-  }, [activeCat]);
+  }, [activeCat, scope, userId, season]);
 
   return (
     <div className="view active hof-view">
       <TopBar title="명예의 전당" />
+
+      <div className="hof-scope" role="tablist" aria-label="기간">
+        <button
+          className={`hof-tab${scope === 'all' ? ' active' : ''}`}
+          onClick={() => setScope('all')}
+        >
+          통산
+        </button>
+        <button
+          className={`hof-tab${scope === 'season' ? ' active' : ''}`}
+          onClick={() => setScope('season')}
+        >
+          이달 {season}
+        </button>
+      </div>
 
       <nav className="hof-tabs" role="tablist" aria-label="명예의 전당 카테고리">
         {HOF_CATEGORIES.map(({ key, label }) => (
@@ -43,9 +75,20 @@ export default function HallOfFameView() {
         ))}
       </nav>
 
-      {HOF_CATEGORIES.find(c => c.key === activeCat)?.minLabel && (
+      {activeCat === 'play_streak' && (
         <p className="hof-min-label">
-          최소 {HOF_CATEGORIES.find(c => c.key === activeCat).minLabel} 기록만 집계됩니다
+          {scope === 'season'
+            ? `이달은 ${SEASON_PLAY_STREAK_MIN}일 이상만 집계됩니다`
+            : '최소 10일 이상 기록만 집계됩니다'}
+        </p>
+      )}
+      {myRank && (
+        <p className="hof-my-rank">
+          {myRank.rank
+            ? `내 순위 ${myRank.rank}위 · ${myRank.record}`
+            : myRank.min_needed
+              ? `아직 순위 밖 · ${myRank.record} (집계 ${myRank.min_needed}부터)`
+              : `아직 순위 밖 · ${myRank.record}`}
         </p>
       )}
 
