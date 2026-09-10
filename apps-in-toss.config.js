@@ -12,28 +12,15 @@ export default defineConfig({
   appName: 'today-rps',
 
   brand: {
-    displayName: '오늘의 가위바위보',
-    // NOTE: 심사 통과용 아이콘 업로드 후 Toss 콘솔에서 발급된 URL로 교체
-    icon: 'https://placehold.co/96x96/3B82F6/ffffff.png',
-    primaryColor: '#3B82F6',
+    primaryColor: '#3B82F6'
   },
 
-  web: {
-    host: 'localhost',
-    port: 5173,
-    commands: {
-      dev: 'vite',
-      build: 'vite build',
-    },
-  },
-
-  outdir: 'dist',
-
+  webBundleDir: 'dist',
   permissions: [],
 
   // 내비게이션 바 뒤로가기 버튼 비활성화:
   // 앱 내 TopBar 의 단일 백버튼으로 히스토리 백 / 앱 종료를 처리합니다.
   navigationBar: {
     withBackButton: false,
-  },
+  }
 });

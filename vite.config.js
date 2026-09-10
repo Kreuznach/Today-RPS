@@ -1,8 +1,10 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
+import aitDevtools from "@apps-in-toss/devtools/unplugin";
+
 export default defineConfig({
-  plugins: [react()],
+  plugins: [aitDevtools.vite(), react()],
   // .ait 번들은 내부 경로가 상대 경로여야 합니다
   base: './',
   build: {

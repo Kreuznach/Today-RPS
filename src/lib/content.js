@@ -3,7 +3,7 @@
  * 화면 문구·테마·기록 읽기 (확률은 바꾸지 않음)
  */
 
-export const APP_VERSION = '0.14.0';
+export const APP_VERSION = '0.15.0';
 export const PLAY_STREAK_HOF_MIN = 10;
 export const SEASON_PLAY_STREAK_MIN = 3;
 

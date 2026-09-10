@@ -2,7 +2,7 @@
  * lib/config.js
  * Supabase 연결 정보 및 Toss 유저 식별자
  */
-import { GoogleAdMob, getUserKeyForGame, closeView } from '@apps-in-toss/web-framework';
+import { GoogleAdMob, User, Screen } from '@apps-in-toss/web-framework';
 
 /** 재도전 광고 그룹 ID (AIT 대시보드에서 발급) */
 const AD_GROUP_ID_PROD = 'ait.v2.live.cacf10246e29481d';
@@ -30,11 +30,11 @@ const _useTestAd = (() => {
 const AD_GROUP_ID = _useTestAd ? AD_GROUP_ID_TEST : AD_GROUP_ID_PROD;
 
 /**
- * 미니앱 종료 — AIT의 closeView() 를 호출합니다.
+ * 미니앱 종료 — AIT의 Screen.close() 를 호출합니다.
  * AIT 미지원 환경(개발/브라우저)에서는 아무 동작도 하지 않습니다.
  */
 export function closeApp() {
-  closeView().catch(() => {});
+  Screen.close().catch(() => {});
 }
 
 export const SUPABASE_URL     = import.meta.env.VITE_SUPABASE_URL     ?? '';
@@ -43,19 +43,19 @@ export const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY ?? '';
 /**
  * Toss 유저 식별자 반환
  *
- * AIT(Apps In Toss) 환경에서는 `getUserKeyForGame()`이 반환하는 HASH 값을
+ * AIT(Apps In Toss) 환경에서는 `User.getAnonymousKey()`가 반환하는 HASH 값을
  * 사용자 식별자로 사용합니다. 이 값은 동일 Toss 계정에서 항상 동일하게
  * 반환되므로 안정적인 고유 ID로 활용할 수 있습니다.
  * AIT 미지원 환경(개발/브라우저)에서는 localStorage 기반 게스트 ID로 폴백합니다.
  */
 export async function getTossUserId() {
   try {
-    const result = await getUserKeyForGame();
-    if (result && result !== 'INVALID_CATEGORY' && result !== 'ERROR' && result.type === 'HASH') {
+    const result = await User.getAnonymousKey();
+    if (result && result.type === 'HASH') {
       return result.hash;
     }
   } catch {
-    // AIT SDK 미지원 환경 (개발/브라우저)
+    // AIT SDK 미지원 환경 (개발/브라우저) 또는 오류
   }
   return _guestId();
 }

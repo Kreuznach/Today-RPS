@@ -1,10 +1,29 @@
 # Today RPS — 지금 어디까지 했나
 
-> 마지막 고친 날: 2026-08-20  |  지금 버전: **v0.14.0**
+> 마지막 고친 날: 2026-09-10  |  지금 버전: **v0.15.0**
 >
-> 쉬운 말: 하루 한 판 규칙은 그대로입니다. 이름·배지·이달 순위처럼 **보여줄 기록**만 늘렸습니다.
+> 쉬운 말: 하루 한 판 규칙은 그대로입니다. 이번엔 **눈에 보이는 새 기능은 없고**, 앱을 움직이는
+> "토스 미니앱 엔진(SDK)"만 최신 버전으로 갈아 끼웠습니다. 자동차로 치면 겉모습은 그대로 두고
+> 엔진 부품만 최신 부품으로 교체한 것과 같아요.
 >
 > 성장 아이디어: [GROWTH_AND_CONTENT.md](GROWTH_AND_CONTENT.md)
+
+### v0.15.0에서 새로 된 것 — 토스 SDK 업그레이드 (2026-09-10)
+- **`@apps-in-toss/web-framework`를 2.1.0 → 3.4.0으로 업그레이드**했습니다.
+  - 토스에서 "3.1 이상을 써주세요"라고 권장해서 진행했습니다. (버전 숫자는 게임 버전이랑 비슷해요.
+    낮은 번호는 옛날 버전, 높은 번호는 최신 버전이라는 뜻이에요.)
+  - 공식 변환 도구(`ait migrate v3`)를 사용해 설정 파일을 `granite.config.js` → **`apps-in-toss.config.js`**
+    형식으로 자동 변환했습니다. (파일 이름과 몇몇 설정 이름만 바뀐 것이고, 앱 내용은 그대로예요.)
+  - 개발용 도구 패키지 `@apps-in-toss/devtools`가 추가되어, 컴퓨터 브라우저에서도 토스 앱과
+    비슷한 화면(테스트 패널)을 볼 수 있게 되었습니다.
+- **낡은(deprecated) 함수 교체**: SDK가 "이제 이 함수는 그만 쓰고 이걸 쓰세요"라고 안내한
+  두 곳을 새 함수로 바꿨습니다. (기능은 동일하고, 이름만 바뀐 것이에요.)
+  - 앱 종료: `closeView()` → `Screen.close()`
+  - 사용자 고유 번호 가져오기: `getUserKeyForGame()` → `User.getAnonymousKey()`
+- **패치노트(최근 업데이트) 갱신**: 앱 메인 화면 아래 "최근 업데이트" 목록에 오늘 날짜로 안내
+  문구를 추가했습니다. → [changelogs.json](../src/data/changelogs.json)
+- **확인한 것**: `npm install`, `npm run build`(빌드 성공), `npm run dev`(개발 서버 정상 실행,
+  화면 정상 표시)까지 모두 문제없이 동작하는 걸 확인했습니다.
 
 ### v0.14.0에서 새로 된 것
 - 이름 바꾸기 (한국 시간 하루 1번)
@@ -139,6 +158,7 @@
 | 2026-04-03 | 기록 저장 중 `[23514]` check_violation | `hall_of_fame.rank CHECK (rank BETWEEN 1 AND 5)` 제약이 남아 있어 6~10위 INSERT 실패 | `008` 마이그레이션에 `DROP/ADD CONSTRAINT` 추가 (1~10 으로 확장) |
 | 2026-04-03 | 명예의 전당 카테고리 탭이 스크롤 시 가려짐 (2차) | `.view`의 `flex + overflow-y: auto`에서 `sticky`가 동작하지 않는 구조적 문제 | `hof-view` 클래스 추가 → `.view` overflow 제거, `.hof-content`를 스크롤 컨테이너로 변경 |
 | 2026-07-24 | Windows에서 `npm run build:ait` 시 `'node_modules'은(는) ... 아닙니다` | `build:ait` 스크립트가 `node_modules/.bin/ait build` 슬래시 경로로 작성되어 Windows 기본 셸(`cmd.exe`)이 `/`를 스위치로 오인식 | `build:ait` 스크립트를 `ait build`로 변경 (npm이 `node_modules/.bin`을 PATH에 자동 추가하므로 OS 무관하게 동작) |
+| 2026-09-10 | `ait migrate v3` 실행 중 `npm install` 자동 실행 단계 실패 (`ETARGET`) | 마이그레이션 도구가 넣어준 `@apps-in-toss/devtools@^3.4.0`이 실제로 존재하지 않는 버전이었음 | `package.json`에서 devtools 버전을 실제 존재하는 최신판 `^3.2.0`으로 고쳐 쓰고 `npm install` 재실행 |
 
 ---
 
@@ -200,6 +220,7 @@ Today-RPS/
 
 ```5  명예의 전당 TOP 10
 v0.14.0 성장 묶음 — 이름, 공유, 오류 화면, 배지, 이달 순위
+v0.15.0 토스 SDK 3.4.0 업그레이드 (앱 기능 변화 없음, 엔진만 교체)
 v1.0.0  스토어 출시 (JWT·검수는 코드 밖 작업
                       (실 SDK 완전 연동 + RLS 프로덕션 설정 완료)
 ```
