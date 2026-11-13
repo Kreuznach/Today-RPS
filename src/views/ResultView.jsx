@@ -6,7 +6,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useApp } from '../context/AppContext.jsx';
 import { CHOICE_EMOJI, RESULT_MAP, watchAd } from '../lib/config.js';
 import { buildStreakMessage, launchConfetti } from '../lib/game.js';
-import { fortuneCopy, worldWinLine, weekThemeHand } from '../lib/content.js';
+import { fortuneCopy, worldWinLine, weekThemeHand, nextGoalLine } from '../lib/content.js';
 import { shareResultCard } from '../lib/share.js';
 
 export default function ResultView({ state }) {
@@ -20,6 +20,7 @@ export default function ResultView({ state }) {
   const showAdRetry  = !isRetry && result !== 'win';
   const week = weekThemeHand();
   const world = worldWinLine(dailyStats);
+  const goal = nextGoalLine(streaks);
 
   // Confetti
   useEffect(() => {
@@ -78,6 +79,7 @@ export default function ResultView({ state }) {
           <p className="hint-line">{week.label} 손으로 이겼어요. 점수는 그대로, 배지만 받아요.</p>
         )}
         {world && <p className="hint-line muted">{world}</p>}
+        {goal && <p className="next-goal">{goal}</p>}
 
         <button
           className="btn-secondary"

@@ -192,6 +192,22 @@ svg    { display: block; }
 .hero-card.theme-sat, .hero-card.theme-sun { background: #0F8A6B; }
 .hint-line { font-size: 13px; color: var(--gray-600); text-align: center; line-height: 1.45; }
 .hint-line.muted { color: var(--gray-400); }
+.more-lines { width: 100%; display: flex; flex-direction: column; gap: 4px; }
+.more-toggle { align-self: center; font-size: 12px; }
+.stamp-board { width: 100%; display: flex; flex-direction: column; gap: 6px; align-items: center; }
+.stamp-row { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; width: 100%; }
+.stamp-cell {
+  aspect-ratio: 1; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; background: var(--gray-100); color: var(--gray-400);
+  border: 1px dashed var(--gray-200);
+}
+.stamp-cell.on { background: var(--blue); color: #fff; border: 1px solid var(--blue); }
+.stamp-caption { font-size: 12px; color: var(--gray-600); text-align: center; }
+.tomorrow-teaser {
+  width: 100%; padding: 10px 14px; border-radius: var(--radius-md);
+  background: var(--blue-light); color: var(--blue); font-size: 13px; font-weight: 600; text-align: center;
+}
+.next-goal { font-size: 14px; font-weight: 700; color: var(--blue); text-align: center; z-index: 1; }
 .status-banner {
   width: 100%; padding: 10px 14px; border-radius: var(--radius-md);
   background: var(--yellow-light); color: #8A5A00; font-size: 13px; font-weight: 600; text-align: center;

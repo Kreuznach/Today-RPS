@@ -10,14 +10,18 @@ import { getLocalKSTDate } from '../lib/supabase.js';
 import {
   APP_VERSION, weekdayTheme, todayHandHint, weekThemeHand,
   playStreakDday, streakWarning, worldWinLine, teamLeadLine,
+  stampBoard, nextGoalLine, tomorrowTeaser,
 } from '../lib/content.js';
 import changelogs from '../data/changelogs.json';
 
 export default function MainView() {
   const { goTo, todayStatus, streaks, dailyStats, online, showToast } = useApp();
   const [adLoading, setAdLoading] = useState(false);
+  const [showMore, setShowMore] = useState(false);
 
   const status = todayStatus;
+  const stamps = useMemo(() => stampBoard(streaks?.play_streak), [streaks]);
+  const goal = useMemo(() => nextGoalLine(streaks), [streaks]);
   const theme = useMemo(() => weekdayTheme(), []);
   const hint  = useMemo(() => todayHandHint(getLocalKSTDate()), []);
   const week  = useMemo(() => weekThemeHand(), []);
@@ -130,10 +134,32 @@ export default function MainView() {
         )}
         {warn && <p className="status-banner">{warn}</p>}
         <p className="hint-line">{hint.text}</p>
-        <p className="hint-line muted">{week.label} · {week.hint}</p>
-        {streaks && <p className="hint-line">{playStreakDday(streaks.play_streak)}</p>}
-        {worldWinLine(dailyStats) && <p className="hint-line">{worldWinLine(dailyStats)}</p>}
-        {teamLeadLine(dailyStats) && <p className="hint-line muted">{teamLeadLine(dailyStats)}</p>}
+
+        {streaks && (
+          <div className="stamp-board" aria-label="출석 도장판">
+            <div className="stamp-row">
+              {stamps.cells.map((on, i) => (
+                <span key={i} className={`stamp-cell${on ? ' on' : ''}`}>{on ? '✔' : i + 1}</span>
+              ))}
+            </div>
+            <p className="stamp-caption">
+              {stamps.done
+                ? `출석 도장 ${stamps.total}개 완성! 명예의 전당에 도전해 보세요`
+                : `출석 도장 ${stamps.stamped}/${stamps.total} · ${playStreakDday(streaks.play_streak)}`}
+            </p>
+          </div>
+        )}
+
+        {showMore && (
+          <div className="more-lines">
+            <p className="hint-line muted">{week.label} · {week.hint}</p>
+            {worldWinLine(dailyStats) && <p className="hint-line">{worldWinLine(dailyStats)}</p>}
+            {teamLeadLine(dailyStats) && <p className="hint-line muted">{teamLeadLine(dailyStats)}</p>}
+          </div>
+        )}
+        <button className="link-btn more-toggle" onClick={() => setShowMore((v) => !v)}>
+          {showMore ? '접기 ▲' : '오늘의 소식 더 보기 ▼'}
+        </button>
 
         <div className="chance-slots" aria-label="남은 기회">
           <div className={dot0} aria-label="1회차">1회</div>
@@ -146,6 +172,10 @@ export default function MainView() {
             {preview.text}
           </div>
         )}
+        {status?.playedToday && (
+          <p className="tomorrow-teaser">🌙 {tomorrowTeaser()}</p>
+        )}
+        {status?.playedToday && goal && <p className="hint-line">{goal}</p>}
 
         <button
           className="btn-primary btn-xl"
