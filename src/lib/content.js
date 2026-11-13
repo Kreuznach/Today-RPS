@@ -3,7 +3,7 @@
  * 화면 문구·테마·기록 읽기 (확률은 바꾸지 않음)
  */
 
-export const APP_VERSION = '0.15.0';
+export const APP_VERSION = '0.16.0';
 export const PLAY_STREAK_HOF_MIN = 10;
 export const SEASON_PLAY_STREAK_MIN = 3;
 
@@ -188,12 +188,71 @@ export const BADGE_CATALOG = [
   { key: 'team_joined',     name: '응원 합류', desc: '응원 색을 골랐어요' },
   { key: 'week_theme_win',  name: '주간 손',   desc: '이번 주 테마 손으로 승리' },
   { key: 'scissors_3',      name: '가위 장인', desc: '가위로 3승' },
+  { key: 'rock_3',          name: '바위 장인', desc: '바위로 3승' },
+  { key: 'paper_3',         name: '보 장인',   desc: '보로 3승' },
+  { key: 'all_hands_win',   name: '세 손 정복', desc: '가위·바위·보로 모두 이겼어요' },
+  { key: 'play_14',         name: '14일 출석', desc: '2주 동안 꾸준히 왔어요' },
+  { key: 'play_30',         name: '30일 출석', desc: '한 달 개근!' },
+  { key: 'win_10',          name: '10연승',    desc: '연속 승리 10' },
+  { key: 'wins_30',         name: '30승',      desc: '총 30번 이겼어요' },
 ];
 
-export function extraBadgeKeys({ records = [], weekHand } = {}) {
-  const extra = [];
-  const scissorWins = records.filter((r) => r.user_choice === 'scissors' && r.result === 'win').length;
-  if (scissorWins >= 3) extra.push('scissors_3');
+/** 기록(streaks)만 보고 계산하는 배지. 판 수·확률과 무관해요. */
+export function streakBadgeKeys(streaks) {
+  if (!streaks) return [];
+  const out = [];
+  if ((streaks.max_play_streak ?? 0) >= 14) out.push('play_14');
+  if ((streaks.max_play_streak ?? 0) >= 30) out.push('play_30');
+  if ((streaks.max_win_streak ?? 0) >= 10) out.push('win_10');
+  if ((streaks.total_wins ?? 0) >= 30) out.push('wins_30');
+  return out;
+}
+
+export const STAMP_DAYS = 10;
+
+/** 출석 도장판: 1~10일 칸. 10일이 넘으면 모두 찍힌 상태로 보여 줘요. */
+export function stampBoard(playStreak = 0) {
+  const n = Math.max(0, Number(playStreak) || 0);
+  const stamped = Math.min(n, STAMP_DAYS);
+  return {
+    stamped,
+    total: STAMP_DAYS,
+    cells: Array.from({ length: STAMP_DAYS }, (_, i) => i < stamped),
+    done: n >= STAMP_DAYS,
+  };
+}
+
+/** 가장 가까운 다음 목표 한 줄. 겁주지 않고 사실만 알려 줘요. */
+export function nextGoalLine(streaks) {
+  if (!streaks) return '';
+  const goals = [];
+  const add = (cur, targets, fn) => {
+    const t = targets.find((x) => x > (cur ?? 0));
+    if (t) goals.push({ left: t - (cur ?? 0), text: fn(t, t - (cur ?? 0)) });
+  };
+  add(streaks.play_streak, [3, 7, 10, 14, 30], (t, l) => `${t}일 출석 배지까지 ${l}일!`);
+  if ((streaks.win_streak ?? 0) > 0) {
+    add(streaks.win_streak, [3, 5, 10], (t, l) => `${t}연승까지 ${l}승 남았어요!`);
+  }
+  add(streaks.retry_wins, [3], (t, l) => `광고 역전 ${t}회 배지까지 ${l}번!`);
+  if (!goals.length) return '';
+  goals.sort((a, b) => a.left - b.left);
+  return `🎯 ${goals[0].text}`;
+}
+
+/** 내일 요일 옷 예고. 오늘 이미 한 판을 끝낸 사람에게 보여 줘요. */
+export function tomorrowTeaser() {
+  const next = weekdayTheme((kstWeekday() + 1) % 7);
+  return `내일은 「${next.name}」! ${next.hero}`;
+}
+
+export function extraBadgeKeys({ records = [], weekHand, streaks } = {}) {
+  const extra = [...streakBadgeKeys(streaks)];
+  const winsBy = (hand) => records.filter((r) => r.user_choice === hand && r.result === 'win').length;
+  if (winsBy('scissors') >= 3) extra.push('scissors_3');
+  if (winsBy('rock') >= 3) extra.push('rock_3');
+  if (winsBy('paper') >= 3) extra.push('paper_3');
+  if (winsBy('scissors') && winsBy('rock') && winsBy('paper')) extra.push('all_hands_win');
   if (weekHand && records.some((r) => r.user_choice === weekHand && r.result === 'win')) {
     extra.push('week_theme_win');
   }

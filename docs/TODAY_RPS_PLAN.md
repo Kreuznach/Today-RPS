@@ -6,6 +6,7 @@
 > - 연속 플레이 집계 하한: 기획 20일 → 구현 **10일** ([007_play_streak_min_threshold.sql](../supabase/migrations/007_play_streak_min_threshold.sql))
 > - 날짜 기준: 기획 ‘서버 시각’ → 구현 **KST(Asia/Seoul) 자정**
 > - v0.14.0: 이름 편집, 배지, 이달 전당, 오늘 통계 ([009_growth_features.sql](../supabase/migrations/009_growth_features.sql))
+> - v0.16.0: 출석 도장판, 내일 예고, 다음 목표 한 줄, 새 배지 (DB 변경 없음, [FUN_AND_RETURN_GUIDE.md](FUN_AND_RETURN_GUIDE.md))
 > - 성장·확장 아이디어는 [GROWTH_AND_CONTENT.md](GROWTH_AND_CONTENT.md)를 본다.
 
 ---

@@ -213,7 +213,7 @@ export async function awardBadges(userId, keys = []) {
 }
 
 async function awardLocalBadges(userId) {
-  const records = await fetchMyRecords(userId);
-  const keys = extraBadgeKeys({ records, weekHand: weekThemeHand().hand });
+  const [records, streaks] = await Promise.all([fetchMyRecords(userId), fetchMyStreaks(userId)]);
+  const keys = extraBadgeKeys({ records, weekHand: weekThemeHand().hand, streaks });
   await awardBadges(userId, keys);
 }
