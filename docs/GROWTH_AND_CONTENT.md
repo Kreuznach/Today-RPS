@@ -2,7 +2,8 @@
 
 > 작성: 2026-08-19 / 갱신: 2026-08-20  
 > 대상: [README.md](../README.md), [TODAY_RPS_PLAN.md](TODAY_RPS_PLAN.md), [PROGRESS.md](PROGRESS.md)  
-> v0.14.0에서 적용 가능한 항목은 코드에 넣었습니다. 콘솔·검수 항목은 남겨 둡니다.
+> v0.14.0에서 적용 가능한 항목은 코드에 넣었습니다. 콘솔·검수 항목은 남겨 둡니다.  
+> 앱인토스 기능(진동·게임 랭킹·공유 링크·포인트 정책) 분석은 [APPS_IN_TOSS_IDEAS.md](APPS_IN_TOSS_IDEAS.md)를 본다.
 
 ---
 
